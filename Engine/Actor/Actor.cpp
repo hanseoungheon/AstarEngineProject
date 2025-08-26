@@ -83,7 +83,7 @@ void Actor::QuitGame()
     Engine::Get().Quit();
 }
 
-void Actor::SetPosition(const Vector2& newPosition)
+void Actor::SetActorPosition(const Vector2& newPosition)
 {
     //예외처리 (화면 벗어났는지 확인).
 
@@ -94,7 +94,7 @@ void Actor::SetPosition(const Vector2& newPosition)
     }
 
     // 오른쪽 가장자리가 화면 오른쪽을 벗어났는지.
-    if (newPosition.x + width - 1 > Engine::Get().GetWidth())
+    if (newPosition.x + width - 1 > Engine::Get().ConsoleWidth())
     {
         return;
     }
@@ -106,7 +106,7 @@ void Actor::SetPosition(const Vector2& newPosition)
     }
 
     //화면 아래를 벗어났는지
-    if (newPosition.y - 1 > Engine::Get().Height())
+    if (newPosition.y - 1 > Engine::Get().ConsoleHeight())
     {
         return;
     }
@@ -115,27 +115,40 @@ void Actor::SetPosition(const Vector2& newPosition)
     {
         return;
     }
+
+    //지울 위치 확인하기. 
+    Vector2 direction = newPosition - position; //갈 위치 - 현재위치 = 방향벡터.
+
+    position.x = (direction.x >= 0) ? position.x : position.x + width - 1;
+
+    Utils::SetConsolePosition(position);
+
+    std::cout << ' ';
+
+    position = newPosition;
 }
 
-Vector2 Actor::GetPosition() const
+Vector2 Actor::GetActorPosition() const
 {
-    return Vector2();
+    return position;
 }
 
 int Actor::GetWidth() const
 {
-    return 0;
+    return width;
 }
 
 void Actor::SetSortingOrder(unsigned int sortingOrder)
 {
+    this->sortingOrder = sortingOrder;
 }
 
 void Actor::SetOwner(Level* newOwner)
 {
+    Owner = newOwner;
 }
 
 Level* Actor::GetOwner()
 {
-    return nullptr;
+    return Owner;
 }
