@@ -2,7 +2,7 @@
 #include "Core.h"
 #include <Windows.h>
 
-class Vector2
+class Engine_API Vector2
 {
 public:
 	Vector2(int x = 0, int y = 0);

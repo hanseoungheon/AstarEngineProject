@@ -1,7 +1,9 @@
 #include <iostream>
-
+#include "Level/SokobanLevel.h"
+#include "Game/Game.h"
 int main()
 {
-	std::cout << "test";
+	Game AstarTestingDemo;
+	//std::cout << "test";
 	std::cin.get();
 }

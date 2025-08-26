@@ -41,7 +41,7 @@ public:
 
 #define RTTI_DECLARATIONS(Type, ParentType)												\
 public:																					\
-	using super = ParentType;														\
+	using Super = ParentType;														\
 	virtual const size_t& TypeIdInstance() const { return Type::TypeIdClass(); }		\
 	static const size_t TypeIdClass()													\
 	{																					\
