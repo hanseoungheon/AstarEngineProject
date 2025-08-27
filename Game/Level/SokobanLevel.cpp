@@ -32,6 +32,7 @@ void SokobanLevel::Tick(float DeltaTime)
     {
         FindStartAndGoal(&startNode, &goalNode);
         std::vector<Node*> path = Astar.FindPath(startNode, goalNode, MapGrid);
+       //Astar.FindPath_NonReturn(startNode,goalNode,MapGrid);
     }
 }
 
@@ -130,7 +131,7 @@ bool SokobanLevel::CheckGameClear()
 
 void SokobanLevel::FindStartAndGoal(Node** outStartNode, Node** outGoalNode)
 {
-    bool hasInitialized = false;
+    //bool hasInitialized = false;
 
     for (int iterator = 0; iterator < MapGrid.size(); ++iterator)
     {
@@ -141,20 +142,36 @@ void SokobanLevel::FindStartAndGoal(Node** outStartNode, Node** outGoalNode)
             //    hasInitialized = true;
             //    break;
             //}
-            Player* player = actor->As<Player>();
-            Target* target = actor->As<Target>();
-            if (player != nullptr)
+            
+            //Player* player = actor->As<Player>();
+            //Target* target = actor->As<Target>();
+            //if (player != nullptr)
 
+            //{
+            //    *outStartNode = new Node(player->GetActorPosition());
+            //    continue;
+            //}
+
+            //if (target != nullptr)
+            //{
+            //    *outGoalNode = new Node(target->GetActorPosition());
+            //    continue;
+            //}
+            //std::cout << "디버그테스트디버그테스트디버그테스트디버그테스트디버그테스트디버그테스트디버그테스트";
+            if (actor->GetOriginalActor()->GetNameTag() == 'P')
             {
-                *outStartNode = new Node(player->GetActorPosition());
+                *outStartNode = new Node(actor->GetActorPosition());
                 continue;
             }
 
-            if (target != nullptr)
+            if (actor->GetOriginalActor()->GetNameTag() == 'G')
             {
-                *outGoalNode = new Node(target->GetActorPosition());
+                *outGoalNode = new Node(actor->GetActorPosition());
                 continue;
             }
+
+            actor->GetOriginalActor()->SetColor(Color::Blue);
+
         }
     }
 

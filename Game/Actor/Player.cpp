@@ -7,7 +7,7 @@
 #include <iostream>
 
 Player::Player(const Vector2& position)
-	:Actor("P", Color::Red, position)
+	:Actor("P", Color::Red, position,'P')
 {
 	SetSortingOrder(3);
 }

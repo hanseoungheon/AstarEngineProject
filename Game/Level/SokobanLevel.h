@@ -26,7 +26,7 @@ private:
 
 	bool CheckGameClear();
 
-	void FindStartAndGoal(Node**outStartNode,Node**outGoalNode);
+	void FindStartAndGoal(Node** outStartNode,Node** outGoalNode);
 
 	void FindOriginalActor();
 

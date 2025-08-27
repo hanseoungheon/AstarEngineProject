@@ -28,6 +28,12 @@ public:
 		std::vector<std::vector<Actor*>>& grid
 	);
 
+	void FindPath_NonReturn(
+		Node* startNode,
+		Node* goalNode,
+		std::vector<std::vector<Actor*>>& grid
+	);
+
 	//그리드 출력 함수. 그리드를 액터로 출력해야하나..? 아니면..?
 	void DisplayGridWithPath(std::vector<std::vector<Actor*>>& grid,
 		const std::vector<Node*> path);

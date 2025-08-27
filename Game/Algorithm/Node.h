@@ -69,7 +69,7 @@ public:
 		fCost = newfCost;
 	}
 
-private:
+public:
 	Vector2 NodePosition;
 
 	float gCost = 0.0f;

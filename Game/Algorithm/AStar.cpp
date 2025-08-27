@@ -61,7 +61,7 @@ std::vector<Node*> AStar::FindPath(Node* startNode, Node* goalNode, std::vector<
 
         for (Node* node : openList)
         {
-            if (node->GetgCost() < lowestNode->GetfCost())
+            if (node->fCost < lowestNode->fCost)
             {
                 lowestNode = node;
             }
@@ -133,7 +133,7 @@ std::vector<Node*> AStar::FindPath(Node* startNode, Node* goalNode, std::vector<
 
             //이미 방문했어도 무시.
             //이미 방문했는지는 확인하는 함수 호출.
-            float gCost = currentNode->GetgCost() + direction.cost;
+            float gCost = currentNode->gCost + direction.cost;
             if (HasVisited(newX,newY,gCost) == true)
             {
                 continue;
@@ -144,12 +144,12 @@ std::vector<Node*> AStar::FindPath(Node* startNode, Node* goalNode, std::vector<
             //비용도 계산.
             //Getter는 const라 대입이 불가했음 그래서 그냥 Setter를 대입.
             //neightborNode->GetgCost() = currentNode->GetgCost() + direction.cost;
-            neightborNode->SetgCost(currentNode->GetgCost() + direction.cost);
+            neightborNode->gCost = currentNode->gCost + direction.cost;
 
             //neightborNode->GethCost() = CalculateHeuistic();
-            neightborNode->SethCost(CalculateHeuistic(neightborNode,goalNode));
+            neightborNode->hCost = CalculateHeuistic(neightborNode,goalNode);
 
-            neightborNode->SetfCost(neightborNode->GetgCost() + neightborNode->GethCost());
+            neightborNode->fCost = neightborNode->gCost + neightborNode->hCost;
 
             //이웃 노드가 열린 리스트에 있는지 확인.
             Node* openListNode = nullptr;
@@ -164,8 +164,8 @@ std::vector<Node*> AStar::FindPath(Node* startNode, Node* goalNode, std::vector<
 
             //노드가 목록에 없거나 Or 비용이 싸면, 새 노드를 추가합니다.
             if (openListNode == nullptr ||
-                openListNode->GetgCost() > neightborNode->GetgCost() ||
-                openListNode->GetfCost() > neightborNode->GetfCost())
+                openListNode->gCost > neightborNode->gCost ||
+                openListNode->fCost > neightborNode->fCost)
             {
                 //Todo: 현재 중점 고민 과제. 현재 그리는 레벨의 액터집합의 복사본임. 
                 // 그리드를 안쓰고 벡터를 사용해보는방법도 고려해보기.
@@ -178,8 +178,8 @@ std::vector<Node*> AStar::FindPath(Node* startNode, Node* goalNode, std::vector<
             }
             else
             {
-                grid[newX][newY]->SetOriginalActorImage("#");
-                grid[newX][newY]->SetOriginalActorColor(Color::Green);
+                //grid[newX][newY]->SetOriginalActorImage("#");
+                //grid[newX][newY]->SetOriginalActorColor(Color::Green);
                 SafeDelete(neightborNode);
             }
 
@@ -188,6 +188,163 @@ std::vector<Node*> AStar::FindPath(Node* startNode, Node* goalNode, std::vector<
         }
     }
     return std::vector<Node*>();
+}
+
+void AStar::FindPath_NonReturn(Node* startNode, Node* goalNode, std::vector<std::vector<Actor*>>& grid)
+{
+    this->startNode = startNode;
+    this->goalNode = goalNode;
+
+    //시작 노드를 열린 목록에 저장.
+    openList.emplace_back(startNode);
+
+    //Todo: 방향벡터를 만들어보는 방법 고려.
+    std::vector<Direction> directions =
+    {
+        //하 상 우 좌 순서로 이동.
+        {Vector2(0,1),1.0f}, {Vector2(0,-1),1.0f}, {Vector2(1,0),1.0f}, {Vector2(-1,0),1.0f},
+
+        {Vector2(1,1), 1.414f}, {Vector2(1,-1), 1.414f},
+        {Vector2(-1,1), 1.414f}, {Vector2(-1,-1), 1.414f},
+
+    };
+
+
+    while (!openList.empty()) //열린 노드가 비어있지 않으면 계속 방문
+    {
+        //가장 비용이 적은 노드 선택.
+        Node* lowestNode = openList[0];
+
+        for (Node* node : openList)
+        {
+            if (node->fCost < lowestNode->fCost)
+            {
+                lowestNode = node;
+            }
+        }
+
+        Node* currentNode = lowestNode;
+
+        //현재 노드가 목표 노드인지 확인.
+        if (IsDestination(currentNode) == true)
+        {
+            ////목표 노드라면 지금까지의 경로를 계산해서 반환.
+            //return ConstructPath(currentNode);
+            std::cout << "찾았습니다.\n";
+        }
+
+        //닫힌 목록에 추가.
+        for (int ix = 0; ix < (int)openList.size(); ++ix)
+        {
+            if (*openList[ix] == *currentNode)
+            {
+                //이터레이터를 사용해서 배열에서 노드 동적으로 제거.
+                openList.erase(openList.begin() + ix);
+                break;
+            }
+        }
+
+        //현재 노드를 닫힌 노드에 추가.
+        //먼저 이미 있는지부터 확인.
+        bool isNodeInList = false;
+
+        for (Node* node : closedList)
+        {
+            if (*node == *currentNode)
+            {
+                isNodeInList = true;
+                break;
+            }
+        }
+
+        //방문했으면 아래단계 건너뛰기.
+        if (isNodeInList == true)
+        {
+            continue;
+        }
+
+        closedList.emplace_back(currentNode);
+
+        //이웃노드 방문하기
+        //Todo: 방향을 이대로 Vector2를 써도 되는지 방향벡터를 따로 실시간으로 구해야하는지 심사숙고.
+        for (const Direction& direction : directions)
+        {
+            int newX = currentNode->GetNodePosition().x + direction.position.x;
+            int newY = currentNode->GetNodePosition().y + direction.position.y;
+            Vector2 newVector = Vector2(newX, newY);
+
+            //그리드 밖인지 확인.
+            if (IsInRange(newX, newY, grid) == false)
+            {
+                //그리드 밖이면 무시.
+                continue;
+            }
+
+            //옵션 장애물인지 확인.
+            //값이 #이면 장애물이라고 약속.
+
+            if (grid[newX][newY]->GetImage() == "#")
+            {
+                continue;
+            }
+
+            //이미 방문했어도 무시.
+            //이미 방문했는지는 확인하는 함수 호출.
+            float gCost = currentNode->gCost + direction.cost;
+            if (HasVisited(newX, newY, gCost) == true)
+            {
+                continue;
+            }
+
+            //방문을 위한 노드 생성.
+            Node* neightborNode = new Node(newVector, currentNode);
+            //비용도 계산.
+            //Getter는 const라 대입이 불가했음 그래서 그냥 Setter를 대입.
+            //neightborNode->GetgCost() = currentNode->GetgCost() + direction.cost;
+            neightborNode->gCost = currentNode->gCost + direction.cost;
+
+            //neightborNode->GethCost() = CalculateHeuistic();
+            neightborNode->hCost = CalculateHeuistic(neightborNode, goalNode);
+
+            neightborNode->fCost = neightborNode->gCost + neightborNode->hCost;
+
+            //이웃 노드가 열린 리스트에 있는지 확인.
+            Node* openListNode = nullptr;
+            for (Node* node : openList)
+            {
+                if (*node == *neightborNode)
+                {
+                    openListNode = node;
+                    break;
+                }
+            }
+
+            //노드가 목록에 없거나 Or 비용이 싸면, 새 노드를 추가합니다.
+            if (openListNode == nullptr ||
+                openListNode->gCost > neightborNode->gCost ||
+                openListNode->fCost > neightborNode->fCost)
+            {
+                //Todo: 현재 중점 고민 과제. 현재 그리는 레벨의 액터집합의 복사본임. 
+                // 그리드를 안쓰고 벡터를 사용해보는방법도 고려해보기.
+                Vector2 test = Vector2(newX, newY);
+                //액터배열?
+                grid[newX][newY]->SetOriginalActorImage("+"); //SetOriginalActorImage?
+                grid[newX][newY]->SetOriginalActorColor(Color::Green); //SetOriginalActorColor?
+                //음.. 위치가 같으면 같은 액터로 판정 해버리기?
+                openList.emplace_back(neightborNode);
+            }
+            else
+            {
+                //grid[newX][newY]->SetOriginalActorImage("#");
+                //grid[newX][newY]->SetOriginalActorColor(Color::Green);
+                SafeDelete(neightborNode);
+            }
+
+            int delay = (int)(0.1f * 1000);
+            Sleep(delay);
+        }
+    }
+    //return std::vector<Node*>();
 }
 
 
@@ -220,7 +377,7 @@ bool AStar::IsDestination(const Node* node)
 bool AStar::IsInRange(int x, int y, const std::vector<std::vector<Actor*>>& grid)
 {
     //범위 안에 있는지 체크하기. 얘도 굳이 필요할까 굳이?
-    if (x < 0 || y > 0 || x >= (int)grid[0].size() || y >= (int)grid.size())
+    if (x < 0 || y < 0 || x >= (int)grid[0].size() || y >= (int)grid.size())
     {
         return false;
     }

@@ -17,7 +17,7 @@ class Engine_API Actor : public RTTI
 
 public:
 	Actor(const char* image = " ", Color color = Color::White,
-		const Vector2& position = Vector2::Zero);
+		const Vector2& position = Vector2::Zero,char Tag = 'D');
 	virtual ~Actor();
 
 	//이벤트 함수
@@ -62,9 +62,13 @@ public:
 
 	void SetColor(Color newcolor);
 
+	Actor* GetOriginalActor();
 	void SetOriginalActorImage(const char* newImage);
 	void SetOriginalActorColor(Color newColor);
 	void SetOriginalActor(Actor* orininalActor);
+
+	void SetNameTag(char newTag);
+	char GetNameTag();
 protected:
 	//개체의 위치
 	Vector2 position;
@@ -98,4 +102,6 @@ protected:
 
 	//소유 레벨.
 	Level* Owner = nullptr;
+
+	char NameTag = ' ';
 };

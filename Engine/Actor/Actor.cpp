@@ -5,8 +5,8 @@
 #include "Level/Level.h"
 #include "Utils/Utils.h"
 
-Actor::Actor(const char* image, Color color, const Vector2& position)
-    :color(color),position(position)
+Actor::Actor(const char* image, Color color, const Vector2& position,char Tag)
+    :color(color),position(position),NameTag(Tag)
 {
     //문자열의 길이 구하기.
     width = (int)strlen(image);
@@ -180,6 +180,11 @@ void Actor::SetColor(Color newColor)
     color = newColor;
 }
 
+Actor* Actor::GetOriginalActor()
+{
+    return OriginalActor;
+}
+
 void Actor::SetOriginalActorImage(const char* newImage)
 {
     if (OriginalActor == nullptr)
@@ -210,4 +215,14 @@ void Actor::SetOriginalActorColor(Color newColor)
 void Actor::SetOriginalActor(Actor* orininalActor)
 {
     OriginalActor = orininalActor;
+}
+
+void Actor::SetNameTag(char newTag)
+{
+    NameTag = newTag;
+}
+
+char Actor::GetNameTag()
+{
+    return NameTag;
 }
