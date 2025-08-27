@@ -126,7 +126,7 @@ std::vector<Node*> AStar::FindPath(Node* startNode, Node* goalNode, std::vector<
             //옵션 장애물인지 확인.
             //값이 #이면 장애물이라고 약속.
 
-            if (grid[newX][newY]->GetImage() == "#")
+            if (grid[newY][newX]->GetImage() == "#")
             {
                 continue;
             }
@@ -170,9 +170,16 @@ std::vector<Node*> AStar::FindPath(Node* startNode, Node* goalNode, std::vector<
                 //Todo: 현재 중점 고민 과제. 현재 그리는 레벨의 액터집합의 복사본임. 
                 // 그리드를 안쓰고 벡터를 사용해보는방법도 고려해보기.
                 Vector2 test = Vector2(newX, newY);
-                //액터배열?
-                grid[newX][newY]->SetOriginalActorImage("+"); //SetOriginalActorImage?
-                grid[newX][newY]->SetOriginalActorColor(Color::Green); //SetOriginalActorColor?
+                //액터배열? 
+                 
+                
+                //여기서 boolean 변수를 바꿔버리는걸로 하자 그냥.
+                //grid[newY][newX]->SetOriginalActorImage("+"); //SetOriginalActorImage?
+                //grid[newY][newX]->SetOriginalActorColor(Color::Green); //SetOriginalActorColor?
+
+                grid[newY][newX]->GetOriginalActor()->SetTrigger(true);
+                 
+                
                 //음.. 위치가 같으면 같은 액터로 판정 해버리기?
                 openList.emplace_back(neightborNode);
             }
@@ -184,7 +191,7 @@ std::vector<Node*> AStar::FindPath(Node* startNode, Node* goalNode, std::vector<
             }
 
             int delay = (int)(0.1f * 1000);
-            Sleep(delay);
+            //Sleep(5);
         }
     }
     return std::vector<Node*>();
@@ -283,7 +290,7 @@ void AStar::FindPath_NonReturn(Node* startNode, Node* goalNode, std::vector<std:
             //옵션 장애물인지 확인.
             //값이 #이면 장애물이라고 약속.
 
-            if (grid[newX][newY]->GetImage() == "#")
+            if (grid[newY][newX]->GetImage() == "#")
             {
                 continue;
             }
@@ -328,8 +335,8 @@ void AStar::FindPath_NonReturn(Node* startNode, Node* goalNode, std::vector<std:
                 // 그리드를 안쓰고 벡터를 사용해보는방법도 고려해보기.
                 Vector2 test = Vector2(newX, newY);
                 //액터배열?
-                grid[newX][newY]->SetOriginalActorImage("+"); //SetOriginalActorImage?
-                grid[newX][newY]->SetOriginalActorColor(Color::Green); //SetOriginalActorColor?
+                grid[newY][newX]->SetOriginalActorImage("+"); //SetOriginalActorImage?
+                grid[newY][newX]->SetOriginalActorColor(Color::Green); //SetOriginalActorColor?
                 //음.. 위치가 같으면 같은 액터로 판정 해버리기?
                 openList.emplace_back(neightborNode);
             }

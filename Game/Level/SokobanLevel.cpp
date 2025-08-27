@@ -22,6 +22,7 @@ void SokobanLevel::BeginPlay()
 {
     Super::BeginPlay();
     FindOriginalActor();
+    FindStartAndGoal(&startNode, &goalNode);
 }
 
 void SokobanLevel::Tick(float DeltaTime)
@@ -30,7 +31,6 @@ void SokobanLevel::Tick(float DeltaTime)
 
     if (Input::GetController().GetKeyDown(VK_SPACE))
     {
-        FindStartAndGoal(&startNode, &goalNode);
         std::vector<Node*> path = Astar.FindPath(startNode, goalNode, MapGrid);
        //Astar.FindPath_NonReturn(startNode,goalNode,MapGrid);
     }
@@ -40,6 +40,15 @@ void SokobanLevel::Render()
 {
     Super::Render();
     //게임클리어는 일단 보류
+
+    //for (Actor* actor : actors)
+    //{
+    //    if (actor->GetTrigger() == true)
+    //    {
+    //        actor->SetImage("+");
+    //        actor->SetColor(Color::Green);
+    //    }
+    //}
 }
 
 void SokobanLevel::ReadMapFile(const char* fileName)
@@ -161,16 +170,18 @@ void SokobanLevel::FindStartAndGoal(Node** outStartNode, Node** outGoalNode)
             if (actor->GetOriginalActor()->GetNameTag() == 'P')
             {
                 *outStartNode = new Node(actor->GetActorPosition());
+                //actor->GetOriginalActor()->SetColor(Color::Green); 디버그용
                 continue;
             }
 
             if (actor->GetOriginalActor()->GetNameTag() == 'G')
             {
                 *outGoalNode = new Node(actor->GetActorPosition());
+                //actor->GetOriginalActor()->SetColor(Color::Green); 디버그용
                 continue;
             }
 
-            actor->GetOriginalActor()->SetColor(Color::Blue);
+            //actor->GetOriginalActor()->SetColor(Color::Blue); 디버그용
 
         }
     }

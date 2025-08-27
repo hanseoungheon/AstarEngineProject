@@ -226,3 +226,13 @@ char Actor::GetNameTag()
 {
     return NameTag;
 }
+
+void Actor::SetTrigger(bool Trigger)
+{
+    IsTrigged = Trigger;
+}
+
+bool Actor::GetTrigger()
+{
+    return IsTrigged;
+}

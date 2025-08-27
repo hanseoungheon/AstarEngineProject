@@ -69,6 +69,9 @@ public:
 
 	void SetNameTag(char newTag);
 	char GetNameTag();
+
+	void SetTrigger(bool Trigger);
+	bool GetTrigger();
 protected:
 	//개체의 위치
 	Vector2 position;
@@ -102,6 +105,8 @@ protected:
 
 	//소유 레벨.
 	Level* Owner = nullptr;
+
+	bool IsTrigged = false;
 
 	char NameTag = ' ';
 };
