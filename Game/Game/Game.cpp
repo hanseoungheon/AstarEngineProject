@@ -7,7 +7,6 @@ Game::Game()
 {
 	instance = this;
 	AddLevel(new SokobanLevel());
-	//AddLevel(new TestDemoLevel());
 }
 
 //Game::~Game()

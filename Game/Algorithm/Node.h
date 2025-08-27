@@ -7,7 +7,7 @@ class Node
 	//	Vector2 NBoposition;
 	//};
 public:
-	Node(Vector2 position, Node* parentNode = nullptr)
+	Node(const Vector2& position, Node* parentNode = nullptr)
 		: NodePosition(position), parent(parentNode)
 	{
 

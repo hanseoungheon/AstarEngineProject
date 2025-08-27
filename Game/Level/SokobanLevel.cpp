@@ -1,5 +1,6 @@
 #include "SokobanLevel.h"
 #include "Math/Vector2.h"
+#include "Input.h"
 
 #include "Actor/Player.h"
 #include "Actor/Wall.h"
@@ -11,14 +12,27 @@
 SokobanLevel::SokobanLevel()
 {
     ReadMapFile("Stage_Astar.txt");
-    Vector2 position = Vector2(0, 0);
-    AddActor(new Wall(position));
+    //Vector2 position = Vector2(0, 0);
+    //AddActor(new Wall(position));
+
 
 }
 
 void SokobanLevel::BeginPlay()
 {
     Super::BeginPlay();
+    FindOriginalActor();
+}
+
+void SokobanLevel::Tick(float DeltaTime)
+{
+    Super::Tick(DeltaTime);
+
+    if (Input::GetController().GetKeyDown(VK_SPACE))
+    {
+        FindStartAndGoal(&startNode, &goalNode);
+        std::vector<Node*> path = Astar.FindPath(startNode, goalNode, MapGrid);
+    }
 }
 
 void SokobanLevel::Render()
@@ -63,7 +77,7 @@ void SokobanLevel::ReadMapFile(const char* fileName)
 
         if (mapCharcter == '\n')
         {
-            MapGrid.push_back(GetActorBuffer());
+            MapGrid.emplace_back(GetActorBuffer());
             //MapBuffer.clear();
             ClearActorBuffer();
             ++position.y;
@@ -105,6 +119,8 @@ void SokobanLevel::ReadMapFile(const char* fileName)
     fclose(file);
 }
 
+
+
 bool SokobanLevel::CheckGameClear()
 {
     //일단 보류.
@@ -116,25 +132,62 @@ void SokobanLevel::FindStartAndGoal(Node** outStartNode, Node** outGoalNode)
 {
     bool hasInitialized = false;
 
-    for (Actor* actor : actors)
+    for (int iterator = 0; iterator < MapGrid.size(); ++iterator)
     {
-        if (*outStartNode != nullptr && *outGoalNode != nullptr)
+        for (Actor* actor : MapGrid[iterator])
         {
-            hasInitialized = true;
-            break;
-        }
+            //if (*outStartNode != nullptr && *outGoalNode != nullptr)
+            //{
+            //    hasInitialized = true;
+            //    break;
+            //}
+            Player* player = actor->As<Player>();
+            Target* target = actor->As<Target>();
+            if (player != nullptr)
 
-        if (actor != nullptr && actor->GetImage() == "P")
-        {
-            *outStartNode = new Node(actor->GetActorPosition());
-            continue;
-        }
+            {
+                *outStartNode = new Node(player->GetActorPosition());
+                continue;
+            }
 
-        if (actor != nullptr && actor->GetImage() == "G")
+            if (target != nullptr)
+            {
+                *outGoalNode = new Node(target->GetActorPosition());
+                continue;
+            }
+        }
+    }
+
+}
+
+void SokobanLevel::FindOriginalActor()
+{
+    for (int i = 0; i < MapGrid.size(); i++)
+    {
+        for (Actor* gridActor : MapGrid[i])
         {
-            *outGoalNode = new Node(actor->GetActorPosition());
-            continue;
+            for (Actor* actor : actors)
+            {
+                if (actor->GetActorPosition() == gridActor->GetActorPosition())
+                    gridActor->SetOriginalActor(actor);
+            }
         }
     }
 }
 
+bool SokobanLevel::CanPlayerMove(const Vector2& playerPosition, const Vector2& newPosition)
+{
+    for (Actor* const actor : actors)
+    {
+        if (actor->GetActorPosition() == newPosition)
+        {
+            if (actor->As<Wall>())
+            {
+                return false;
+            }
+
+            return true;
+        }
+    }
+    return false;
+}

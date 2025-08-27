@@ -132,6 +132,12 @@ void Engine::Run()
 		//고정 프레임
 		if (deltaTime >= oneFrameTime)
 		{
+			//이전 프레임에 추가 및 삭제 요청된 액터 처리
+			if (mainLevel)
+			{
+				mainLevel->ProcessAddAndDestroyActors();
+			}
+
 			BeginPlay();
 			Tick(deltaTime);
 			Render();
@@ -148,11 +154,7 @@ void Engine::Run()
 			//현재 프레임의 입력을 기록
 			input.SavePreviouseKeyStates();
 
-			//이전 프레임에 추가 및 삭제 요청된 액터 처리
-			if (mainLevel)
-			{
-				mainLevel->ProcessAddAndDestroyActors();
-			}
+
 		}
 	}
 

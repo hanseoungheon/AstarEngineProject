@@ -56,18 +56,15 @@ public:
 	//게임 종료 요청
 	void QuitGame();
 
-public:
-	//Getter
-	char* GetImage()
-	{
+	char* GetImage();
 
-		size_t length = width;
-		returnImage = new char[length + 1];
+	void SetImage(const char* newImage);
 
-		strcpy_s(returnImage, length + 1, image);
-		return returnImage;
-	}
+	void SetColor(Color newcolor);
 
+	void SetOriginalActorImage(const char* newImage);
+	void SetOriginalActorColor(Color newColor);
+	void SetOriginalActor(Actor* orininalActor);
 protected:
 	//개체의 위치
 	Vector2 position;
@@ -95,6 +92,9 @@ protected:
 
 	//삭제 요청됐는지 알려주는 변수
 	bool isExpired = false;
+
+	//만약이것이 복사된 액터이면 원본엑터를 참조해야함.
+	Actor* OriginalActor = nullptr;
 
 	//소유 레벨.
 	Level* Owner = nullptr;

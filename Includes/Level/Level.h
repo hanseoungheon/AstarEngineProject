@@ -41,10 +41,10 @@ public:
 private:
 	void SortActorsBySortingOrder();
 
-protected:
+public:
 	// 레벨에 배치된 모든액터를 관리하는 배열
 	std::vector<Actor*> actors;
-
+protected:
 	//추가 요청된 액터를 관리하는 배열
 	std::vector<Actor*> addRequestedActors;
 

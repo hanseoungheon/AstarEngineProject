@@ -167,12 +167,24 @@ std::vector<Node*> AStar::FindPath(Node* startNode, Node* goalNode, std::vector<
                 openListNode->GetgCost() > neightborNode->GetgCost() ||
                 openListNode->GetfCost() > neightborNode->GetfCost())
             {
+                //Todo: 현재 중점 고민 과제. 현재 그리는 레벨의 액터집합의 복사본임. 
+                // 그리드를 안쓰고 벡터를 사용해보는방법도 고려해보기.
+                Vector2 test = Vector2(newX, newY);
+                //액터배열?
+                grid[newX][newY]->SetOriginalActorImage("+"); //SetOriginalActorImage?
+                grid[newX][newY]->SetOriginalActorColor(Color::Green); //SetOriginalActorColor?
+                //음.. 위치가 같으면 같은 액터로 판정 해버리기?
                 openList.emplace_back(neightborNode);
             }
             else
             {
+                grid[newX][newY]->SetOriginalActorImage("#");
+                grid[newX][newY]->SetOriginalActorColor(Color::Green);
                 SafeDelete(neightborNode);
             }
+
+            int delay = (int)(0.1f * 1000);
+            Sleep(delay);
         }
     }
     return std::vector<Node*>();

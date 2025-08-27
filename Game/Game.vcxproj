@@ -195,6 +195,7 @@
     <ClInclude Include="Algorithm\AStar.h" />
     <ClInclude Include="Algorithm\Node.h" />
     <ClInclude Include="Game\Game.h" />
+    <ClInclude Include="Interface\ICanPlayerMove.h" />
     <ClInclude Include="Level\SokobanLevel.h" />
     <ClInclude Include="Level\TestDemoLevel.h" />
   </ItemGroup>

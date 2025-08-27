@@ -7,4 +7,6 @@ class Ground : public Actor
 
 public:
 	Ground(const Vector2& position);
+
+	virtual void Tick(float DeltaTime) override;
 };

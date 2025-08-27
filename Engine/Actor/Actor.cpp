@@ -153,3 +153,61 @@ Level* Actor::GetOwner()
 {
     return Owner;
 }
+
+char* Actor::GetImage()
+{
+	size_t length = width;
+	returnImage = new char[length + 1];
+
+	strcpy_s(returnImage, length + 1, image);
+	return returnImage;
+}
+
+void Actor::SetImage(const char* newImage)
+{
+	size_t length = strlen(newImage) + 1;
+
+	if (image != nullptr)
+		image = nullptr;
+
+	image = new char[length];
+
+	strcpy_s(image, length, newImage);
+}
+
+void Actor::SetColor(Color newColor)
+{
+    color = newColor;
+}
+
+void Actor::SetOriginalActorImage(const char* newImage)
+{
+    if (OriginalActor == nullptr)
+    {
+        return;
+    }
+
+    size_t length = strlen(newImage) + 1;
+    
+    if (OriginalActor->image != nullptr)
+    {
+        OriginalActor->image = nullptr;
+    }
+
+    OriginalActor->image = new char[length];
+
+    strcpy_s(OriginalActor->image, length, newImage);
+}
+
+void Actor::SetOriginalActorColor(Color newColor)
+{
+    if (OriginalActor != nullptr)
+    {
+        OriginalActor->color = newColor;
+    }
+}
+
+void Actor::SetOriginalActor(Actor* orininalActor)
+{
+    OriginalActor = orininalActor;
+}
