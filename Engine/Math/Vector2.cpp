@@ -31,6 +31,19 @@ Vector2 Vector2::operator-(const Vector2& other) const
 	return Vector2(x - other.x, y - other.y);
 }
 
+Vector2 Vector2::operator^(const int Square) const
+{
+	int result = x;
+	int temp = x;
+
+	for (int i = 1; i < Square; i++)
+	{
+		result = result * temp;
+	}
+
+	return result;
+}
+
 bool Vector2::operator==(const Vector2& other) const
 {
 	return (x == other.x) && (y == other.y);

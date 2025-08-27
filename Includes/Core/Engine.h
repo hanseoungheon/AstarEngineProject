@@ -42,7 +42,7 @@ public:
 	int ConsoleHeight() const;
 
 private:
-	void BeginePlay();
+	void BeginPlay();
 	void Tick(float DeltaTIme = 0.0f);
 	void Render();
 
@@ -53,7 +53,7 @@ protected:
 	//엔진종료 플래그.
 	bool IsQuit = false;
 
-	Level* mainLevel;
+	Level* mainLevel = nullptr;
 
 	Input input;
 

@@ -5,19 +5,19 @@ class Game : public Engine
 {
 public:
 	Game();
-	~Game();
+	//~Game();
 
-	void ToggleMenu();
+	//void ToggleMenu();
 
-	virtual void CleanUp() override;
+	//virtual void CleanUp() override;
 
-	static Game& Get();
+	//static Game& Get();
 
 private:
-	Level* menuLevel = nullptr;
-	Level* backLevel = nullptr;
+	//Level* menuLevel = nullptr;
+	//Level* backLevel = nullptr;
 
-	bool showMenu = false;
+	//bool showMenu = false;
 
-	static Game* instance;
+	//static Game* instance;
 };

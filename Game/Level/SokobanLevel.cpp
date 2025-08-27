@@ -11,16 +11,20 @@
 SokobanLevel::SokobanLevel()
 {
     ReadMapFile("Stage_Astar.txt");
+    Vector2 position = Vector2(0, 0);
+    AddActor(new Wall(position));
 
 }
 
-bool SokobanLevel::CanPlayerMove(const Vector2& playerPosition, const Vector2& newPosition)
+void SokobanLevel::BeginPlay()
 {
-    return false;
+    Super::BeginPlay();
 }
 
 void SokobanLevel::Render()
 {
+    Super::Render();
+    //게임클리어는 일단 보류
 }
 
 void SokobanLevel::ReadMapFile(const char* fileName)
@@ -59,8 +63,9 @@ void SokobanLevel::ReadMapFile(const char* fileName)
 
         if (mapCharcter == '\n')
         {
-            MapGrid.push_back(MapBuffer);
-            MapBuffer.clear();
+            MapGrid.push_back(GetActorBuffer());
+            //MapBuffer.clear();
+            ClearActorBuffer();
             ++position.y;
             position.x = 0;
 
@@ -92,8 +97,6 @@ void SokobanLevel::ReadMapFile(const char* fileName)
             AddActor(new Target(position));
             break;
         }
-
-        MapBuffer.push_back(mapCharcter);
         ++position.x;
     }
 
@@ -104,7 +107,34 @@ void SokobanLevel::ReadMapFile(const char* fileName)
 
 bool SokobanLevel::CheckGameClear()
 {
+    //일단 보류.
     int currentScore = 0;
     return false;
+}
+
+void SokobanLevel::FindStartAndGoal(Node** outStartNode, Node** outGoalNode)
+{
+    bool hasInitialized = false;
+
+    for (Actor* actor : actors)
+    {
+        if (*outStartNode != nullptr && *outGoalNode != nullptr)
+        {
+            hasInitialized = true;
+            break;
+        }
+
+        if (actor != nullptr && actor->GetImage() == "P")
+        {
+            *outStartNode = new Node(actor->GetActorPosition());
+            continue;
+        }
+
+        if (actor != nullptr && actor->GetImage() == "G")
+        {
+            *outGoalNode = new Node(actor->GetActorPosition());
+            continue;
+        }
+    }
 }
 

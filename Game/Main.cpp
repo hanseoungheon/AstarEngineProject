@@ -5,5 +5,6 @@ int main()
 {
 	Game AstarTestingDemo;
 	//std::cout << "test";
+	AstarTestingDemo.Run();
 	std::cin.get();
 }

@@ -11,6 +11,7 @@ public:
 	//연산자 오버로딩.
 	Vector2 operator+(const Vector2& other) const;
 	Vector2 operator-(const Vector2& other) const;
+	Vector2 operator^(const int Square) const;
 	bool operator==(const Vector2& other) const;
 
 	//형변환 연산자 오버로딩.

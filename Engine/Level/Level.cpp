@@ -29,7 +29,7 @@ void Level::BeginPlay()
 		}
 
 		//이미 호출이 된 개체는 건너뛰기.
-		if (actor->HasBeginPlay() == true)
+		if (actor->HasBeganPlay() == true)
 		{
 			continue;
 		}
@@ -57,10 +57,12 @@ void Level::Render()
 {
 	SortActorsBySortingOrder();
 
-	for (Actor* actor : actors)
+	for (Actor* const actor : actors)
 	{
-		if (actor->isActive == false || actor->isExpired == true)
+		if (!actor->isActive || actor->isExpired)
+		{
 			continue;
+		}
 
 		Actor* searchedActor = nullptr;
 
@@ -97,11 +99,13 @@ void Level::Render()
 void Level::AddActor(Actor* newActor)
 {
 	addRequestedActors.emplace_back(newActor);
+	tempActor.emplace_back(newActor);
+	//newActor->SetOwner(this);
 }
 
 void Level::DestroyActor(Actor* destroyedActor)
 {
-	destroyRequsetedActors.emplace_back(destroyedActor);
+	destroyRequstedActors.emplace_back(destroyedActor);
 }
 
 void Level::ProcessAddAndDestroyActors()
@@ -120,7 +124,7 @@ void Level::ProcessAddAndDestroyActors()
 	}
 
 	//배열을 순회하면서 액터 지우기.
-	for (auto* actor : destroyRequsetedActors)
+	for (auto* actor : destroyRequstedActors)
 	{
 		Utils::SetConsolePosition(actor->position);
 
@@ -133,7 +137,7 @@ void Level::ProcessAddAndDestroyActors()
 	}
 
 	//배열 초기화
-	destroyRequsetedActors.clear();
+	destroyRequstedActors.clear();
 
 	for (Actor* const actor : addRequestedActors)
 	{
@@ -147,13 +151,17 @@ void Level::ProcessAddAndDestroyActors()
 
 void Level::SortActorsBySortingOrder()
 {
-	for (int ix = 0; ix < (int)actors.size(); ix++)
+	// 버블 정렬.
+	for (int ix = 0; ix < (int)actors.size(); ++ix)
 	{
-		for (int jx = 0; jx < (int)actors.size(); ++jx)
+		for (int jx = 0; jx < (int)actors.size() - 1; ++jx)
 		{
-			if (actors[jx]->sortingOrder < actors[jx + 1]->sortingOrder)
+			// sortingOrder 값이 클수록 뒤 쪽에 배치.
+			if (actors[jx]->sortingOrder > actors[jx + 1]->sortingOrder)
+			{
+				// 두 액터 위치 교환.
 				std::swap(actors[jx], actors[jx + 1]);
+			}
 		}
 	}
 }
-

@@ -1,6 +1,6 @@
 #include "Actor.h"
 #include <Windows.h>
-#include <iostream>
+
 #include "Engine.h"
 #include "Level/Level.h"
 #include "Utils/Utils.h"
@@ -22,11 +22,12 @@ Actor::Actor(const char* image, Color color, const Vector2& position)
 Actor::~Actor()
 {
     SafeDeleteArray(image);
+    SafeDeleteArray(returnImage);
 }
 
 void Actor::BeginPlay()
 {
-    hasbeginPlay = true;
+    hasBeganPlay = true;
 }
 
 void Actor::Tick(float DeltaTime)
@@ -37,7 +38,7 @@ void Actor::Render()
 {
     Utils::SetConsolePosition(position);
 
-    Utils::SetConsoleTextColor(color);
+    Utils::SetConsoleTextColor(static_cast<WORD>(color));
 
     std::cout << image;
 }
