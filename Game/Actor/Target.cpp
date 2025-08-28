@@ -4,7 +4,7 @@
 #include "Interface/ICanPlayerMove.h"
 
 Target::Target(const Vector2& position)
-	:Actor("G",Color::Blue, position,'G')
+	:Actor("G", Color::Blue, position, 'G')
 {
 	SetSortingOrder(2);
 }
@@ -75,5 +75,4 @@ void Target::Tick(float DeltaTime)
 		}
 	}
 }
-
 

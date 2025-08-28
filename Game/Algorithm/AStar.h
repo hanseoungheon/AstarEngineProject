@@ -22,23 +22,24 @@ public:
 	~AStar();
 	
 
-	std::vector<Node*> FindPath(
-		Node* startNode,
-		Node* goalNode,
-		std::vector<std::vector<Actor*>>& grid
-	);
+	//std::vector<Node*> FindPath(
+	//	Node* startNode,
+	//	Node* goalNode,
+	//	std::vector<std::vector<Actor*>>& grid
+	//);
 
-	void FindPath_NonReturn(
-		Node* startNode,
-		Node* goalNode,
-		std::vector<std::vector<Actor*>>& grid
-	);
+	//void FindPath_NonReturn(
+	//	Node* startNode,
+	//	Node* goalNode,
+	//	std::vector<std::vector<Actor*>>& grid
+	//);
 
 	void StartFindPath(Node* startNode, Node* goalNode);
 
 	std::vector<Node*> StepOfTheFindPath(std::vector<std::vector<Actor*>>& grid);
 
 	bool HasFindingPath();
+	bool HasFoundPath();
 	void IsFinshedFindPath();
 	//그리드 출력 함수. 그리드를 액터로 출력해야하나..? 아니면..?
 	void DisplayGridWithPath(std::vector<std::vector<Actor*>>& grid,
@@ -74,5 +75,10 @@ private:
 	std::vector<std::vector<Actor*>> MyGrid;
 	Node* startNode = nullptr;
 	Node* goalNode = nullptr;
+
 	bool IsFindingPath = false;
+	bool IsFoundPath = false;
+	bool HasRevertGround = false;
+
+	int x, y;
 };

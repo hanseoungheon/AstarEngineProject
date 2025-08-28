@@ -2,7 +2,7 @@
 #include "Input.h"
 
 Ground::Ground(const Vector2& position)
-	:Actor(".",Color::White, position)
+	:Actor(".",Color::White, position,'R')
 {
 	SetSortingOrder(0);
 }

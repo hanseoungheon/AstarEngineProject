@@ -48,4 +48,6 @@ private:
 	AStar Astar;
 	Node* startNode = nullptr;
 	Node* goalNode = nullptr;
+
+	bool IsChageTheCharacter = false;
 };

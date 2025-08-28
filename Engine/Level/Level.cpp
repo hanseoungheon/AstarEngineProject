@@ -1,5 +1,6 @@
 #include "Level.h"
 #include "Actor/Actor.h"
+#include "Actor/UI.h"
 #include "Utils/Utils.h"
 #include <iostream>
 
@@ -16,6 +17,13 @@ Level::~Level()
 	}
 
 	actors.clear();
+
+	for (UI* UI_InLevel : ui_inLevel)
+	{
+		SafeDelete(UI_InLevel);
+	}
+
+	ui_inLevel.clear();
 }
 
 void Level::BeginPlay()
@@ -37,6 +45,21 @@ void Level::BeginPlay()
 		//액터 실행시키기.
 		actor->BeginPlay();
 	}
+
+	for (UI* UI_InLevel : ui_inLevel)
+	{
+		if (UI_InLevel->isActiveUI == false || UI_InLevel->isExpiredUI == true)
+		{
+			continue;
+		}
+
+		if (UI_InLevel->HasBeganPlay() == true)
+		{
+			continue;
+		}
+
+		UI_InLevel->BeginPlay();
+	}
 }
 
 void Level::Tick(float DeltaTime)
@@ -49,6 +72,16 @@ void Level::Tick(float DeltaTime)
 		}
 
 		actor->Tick(DeltaTime);
+	}
+
+	for (UI* UI_InLevel : ui_inLevel)
+	{
+		if (UI_InLevel->isActiveUI == false || UI_InLevel->isExpiredUI == true)
+		{
+			continue;
+		}
+
+		UI_InLevel->Tick(DeltaTime);
 	}
 
 }
@@ -94,6 +127,24 @@ void Level::Render()
 		actor->Render();
 
 	}
+
+	for (UI* const UI_InLevel : ui_inLevel)
+	{
+		if (UI_InLevel->isActiveUI == false || UI_InLevel->isExpiredUI == true)
+		{
+			continue;
+		}
+
+		UI* searchedUI = nullptr;
+
+		//UI는 정렬순서를 신경쓰지 않음.
+		//for (UI* const otherUI : ui_inLevel)
+		//{
+
+		//}
+
+		UI_InLevel->Render();
+	}
 }
 
 void Level::AddActor(Actor* newActor)
@@ -102,10 +153,19 @@ void Level::AddActor(Actor* newActor)
 	tempActor.emplace_back(newActor);
 	//newActor->SetOwner(this);
 }
-
 void Level::DestroyActor(Actor* destroyedActor)
 {
 	destroyRequstedActors.emplace_back(destroyedActor);
+}
+
+void Level::AddUI(UI* newUI)
+{
+	addRequestedUI.emplace_back(newUI);
+}
+
+void Level::DestroyUI(UI* destroyedUI)
+{
+	destroyRequestedUI.emplace_back(destroyedUI);
 }
 
 void Level::ProcessAddAndDestroyActors()
@@ -148,6 +208,49 @@ void Level::ProcessAddAndDestroyActors()
 	//배열 초기화.
 	addRequestedActors.clear();
 }
+
+
+void Level::ProcessAddAndDestroyUI_InLevel()
+{
+	for (auto iterator = ui_inLevel.begin(); iterator != ui_inLevel.end();)
+	{
+		//삭제 요청된 액터 확인 후 배열에서 제외시키는 함수.
+		//포인터를 가르키는 포인터가 바로 이터레이터 (*iterator = Actor*)
+		if ((*iterator)->isExpiredUI)
+		{
+			iterator = ui_inLevel.erase(iterator);
+			continue;
+		}
+
+		++iterator;
+	}
+
+	//배열을 순회하면서 액터 지우기.
+	for (auto* UI_InLevel : destroyRequestedUI)
+	{
+		Utils::SetConsolePosition(UI_InLevel->position);
+
+		for (int i = 0; i < UI_InLevel->width; ++i)
+		{
+			std::cout << " ";
+		}
+
+		SafeDelete(UI_InLevel);
+	}
+
+	//배열 초기화
+	destroyRequestedUI.clear();
+
+	for (UI* const UI_InLevel : addRequestedUI)
+	{
+		ui_inLevel.emplace_back(UI_InLevel);
+		UI_InLevel->SetOwner(this);
+	}
+
+	//배열 초기화.
+	addRequestedUI.clear();
+}
+
 
 void Level::SortActorsBySortingOrder()
 {

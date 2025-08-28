@@ -136,6 +136,7 @@ void Engine::Run()
 			if (mainLevel)
 			{
 				mainLevel->ProcessAddAndDestroyActors();
+				mainLevel->ProcessAddAndDestroyUI_InLevel();
 			}
 
 			BeginPlay();

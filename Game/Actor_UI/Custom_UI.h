@@ -1,9 +1,9 @@
 #pragma once
-#include "Actor/Actor.h"
+#include "Actor/UI.h"
 
-class Custom_UI : public Actor
+class Custom_UI : public UI
 {
-	RTTI_DECLARATIONS(Custom_UI,Actor)
+	RTTI_DECLARATIONS(Custom_UI,UI)
 
 public:
 	Custom_UI(const char* text = "NULL", Color color = Color::White, 

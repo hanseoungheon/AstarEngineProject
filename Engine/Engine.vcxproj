@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Actor\Actor.h" />
+    <ClInclude Include="Actor\UI.h" />
     <ClInclude Include="Core\Core.h" />
     <ClInclude Include="Core\Engine.h" />
     <ClInclude Include="Core\Input.h" />
@@ -31,6 +32,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Actor\Actor.cpp" />
+    <ClCompile Include="Actor\UI.cpp" />
     <ClCompile Include="Core\Engine.cpp" />
     <ClCompile Include="Core\Input.cpp" />
     <ClCompile Include="Level\Level.cpp" />

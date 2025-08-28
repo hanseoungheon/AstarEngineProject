@@ -1,9 +1,9 @@
 #include "Color_UI.h"
 
 Color_UI::Color_UI(const char* text, Color color, const Vector2& position, char NameTag)
-	:Actor(text,color,position,NameTag)
+	:UI(text,color,position,NameTag)
 {
-	SetSortingOrder(5);
+	//SetSortingOrder(5);
 }
 
 void Color_UI::Tick(float DeltaTime)
