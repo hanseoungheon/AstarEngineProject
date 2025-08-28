@@ -6,14 +6,21 @@
 #include "Actor/Wall.h"
 #include "Actor/Target.h"
 #include "Actor/Ground.h"
-
+#include "Actor_UI/Custom_UI.h"
+#include "Actor_UI/Color_UI.h"
 #include <iostream>
 
 SokobanLevel::SokobanLevel()
 {
+
+
+    CreatePlayerAndTargetStatUI();
+    HowToMovementAndOtherManualUI();
+
     ReadMapFile("Stage_Astar.txt");
     //Vector2 position = Vector2(0, 0);
     //AddActor(new Wall(position));
+
 
 
 }
@@ -28,11 +35,43 @@ void SokobanLevel::BeginPlay()
 void SokobanLevel::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
+    
+    ++JumpTick;
+
+    if (Astar.HasFindingPath() == true && JumpTick % 2 == 0)
+    {
+        //Todo: 여기서 계속 돌리게 만들어야함?
+        std::vector<Node*> path = Astar.StepOfTheFindPath(MapGrid);
+    }
 
     if (Input::GetController().GetKeyDown(VK_SPACE))
     {
-        std::vector<Node*> path = Astar.FindPath(startNode, goalNode, MapGrid);
+        Astar.StartFindPath(startNode, goalNode);
        //Astar.FindPath_NonReturn(startNode,goalNode,MapGrid);
+    }
+
+    if (Input::GetController().GetKeyDown(VK_RETURN))
+    {
+        for (Actor* actor : actors)
+        {
+            Player* player = actor->As<Player>();
+            Color_UI* colorUI = actor->As<Color_UI>();
+            //혹시 모르니 안전장치 해놓는게 편할듯?
+            bool tempBool = false;
+
+            if (player != nullptr)
+            {
+                player->SetTrigger(!player->GetTrigger());
+                tempBool = !tempBool;
+            }
+
+            //트리거가 작동하지않은 상태 즉 false면 플레이어가이동하고, 작동한 상태 즉 true면 타겟이 이동.
+            if (colorUI != nullptr)
+            {
+                colorUI->SetActiveColor(player->GetTrigger());
+            }
+
+        }
     }
 }
 
@@ -201,6 +240,23 @@ void SokobanLevel::FindOriginalActor()
             }
         }
     }
+}
+
+void SokobanLevel::CreatePlayerAndTargetStatUI()
+{
+    AddActor(new Custom_UI("Enter: ChangeMoving", Color::Blue, Vector2(0, 10)));
+    AddActor(new Custom_UI("(", Color::White, Vector2(19, 10)));
+    AddActor(new Color_UI("Player", Color::Idensity, Vector2(20, 10), 'P'));
+    AddActor(new Custom_UI("/", Color::White, Vector2(26, 10)));
+    AddActor(new Color_UI("Target", Color::Idensity, Vector2(27, 10), 'T'));
+    AddActor(new Custom_UI(")", Color::White, Vector2(33, 10)));
+}
+
+void SokobanLevel::HowToMovementAndOtherManualUI()
+{
+    //AddActor(new Custom_UI("ArrowKeys: Object Movement", Color::White, Vector2(0, 11)));
+    AddActor(new Custom_UI("ArrowKeys: Object Movement", Color::Green, Vector2(0, 11)));
+    AddActor(new Custom_UI("SpaceBar: FindTarget to using Astar", Color::Purple, Vector2(0, 12)));
 }
 
 bool SokobanLevel::CanPlayerMove(const Vector2& playerPosition, const Vector2& newPosition)

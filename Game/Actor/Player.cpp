@@ -39,7 +39,13 @@ void Player::Tick(float DeltaTime)
 		return;
 	}
 
-	if (Input::GetController().GetKeyDown(VK_LEFT))
+	//if (Input::GetController().GetKeyDown(VK_RETURN))
+	//{
+	//	//IsTrigged는 static 변수입니다.
+	//	IsTrigged = !IsTrigged;
+	//}
+
+	if (Input::GetController().GetKeyDown(VK_LEFT) && IsTrigged == false)
 	{
 		if (canPlayerMoveInterface->CanPlayerMove(GetActorPosition(),
 			Vector2(GetActorPosition().x - 1, GetActorPosition().y)))
@@ -50,7 +56,7 @@ void Player::Tick(float DeltaTime)
 		}
 	}
 
-	if (Input::GetController().GetKeyDown(VK_RIGHT))
+	if (Input::GetController().GetKeyDown(VK_RIGHT) && IsTrigged == false)
 	{
 		if (canPlayerMoveInterface->CanPlayerMove(GetActorPosition(),
 			Vector2(GetActorPosition().x + 1, GetActorPosition().y)))
@@ -61,7 +67,7 @@ void Player::Tick(float DeltaTime)
 		}
 	}
 
-	if (Input::GetController().GetKeyDown(VK_UP))
+	if (Input::GetController().GetKeyDown(VK_UP) && IsTrigged == false)
 	{
 		if (canPlayerMoveInterface->CanPlayerMove(GetActorPosition(),
 			Vector2(GetActorPosition().x, GetActorPosition().y - 1)))
@@ -72,7 +78,7 @@ void Player::Tick(float DeltaTime)
 		}
 	}
 
-	if (Input::GetController().GetKeyDown(VK_DOWN))
+	if (Input::GetController().GetKeyDown(VK_DOWN) && IsTrigged == false)
 	{
 		if (canPlayerMoveInterface->CanPlayerMove(GetActorPosition(),
 			Vector2(GetActorPosition().x, GetActorPosition().y + 1)))

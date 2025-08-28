@@ -106,7 +106,7 @@ protected:
 	//소유 레벨.
 	Level* Owner = nullptr;
 
-	bool IsTrigged = false;
+	static bool IsTrigged;
 
 	char NameTag = ' ';
 };

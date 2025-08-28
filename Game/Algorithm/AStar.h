@@ -34,6 +34,12 @@ public:
 		std::vector<std::vector<Actor*>>& grid
 	);
 
+	void StartFindPath(Node* startNode, Node* goalNode);
+
+	std::vector<Node*> StepOfTheFindPath(std::vector<std::vector<Actor*>>& grid);
+
+	bool HasFindingPath();
+	void IsFinshedFindPath();
 	//그리드 출력 함수. 그리드를 액터로 출력해야하나..? 아니면..?
 	void DisplayGridWithPath(std::vector<std::vector<Actor*>>& grid,
 		const std::vector<Node*> path);
@@ -64,6 +70,9 @@ private:
 private:
 	std::vector<Node*> openList;
 	std::vector<Node*> closedList;
+
+	std::vector<std::vector<Actor*>> MyGrid;
 	Node* startNode = nullptr;
 	Node* goalNode = nullptr;
+	bool IsFindingPath = false;
 };

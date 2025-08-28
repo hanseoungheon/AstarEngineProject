@@ -10,5 +10,5 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
-	virtual void Render() override;
+	//virtual void Render() override;
 };

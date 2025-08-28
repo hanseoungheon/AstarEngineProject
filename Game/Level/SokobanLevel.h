@@ -30,12 +30,18 @@ private:
 
 	void FindOriginalActor();
 
+	void CreatePlayerAndTargetStatUI();
+	void HowToMovementAndOtherManualUI();
+
 public:
 	//Getter
 
 private:
 	int targetScore = 0;
 	bool isGameClear = false;
+
+	//Tick 계산 및 프레임호출에서 프레임 건너뛰기 용
+	int JumpTick = 0;
 
 	std::vector<std::vector<Actor*>> MapGrid;
 

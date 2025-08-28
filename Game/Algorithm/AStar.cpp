@@ -36,6 +36,7 @@ void AStar::DisplayGridWithPath(std::vector<std::vector<Actor*>>& grid, const st
 
 std::vector<Node*> AStar::FindPath(Node* startNode, Node* goalNode, std::vector<std::vector<Actor*>>& grid)
 {
+    //Todo: 이거를 한틱씩 가게 쪼개야됨.
     this->startNode = startNode;
     this->goalNode = goalNode;
 
@@ -126,7 +127,7 @@ std::vector<Node*> AStar::FindPath(Node* startNode, Node* goalNode, std::vector<
             //옵션 장애물인지 확인.
             //값이 #이면 장애물이라고 약속.
 
-            if (grid[newY][newX]->GetImage() == "#")
+            if (grid[newY][newX]->GetOriginalActor()->GetImage() == "#")
             {
                 continue;
             }
@@ -174,8 +175,8 @@ std::vector<Node*> AStar::FindPath(Node* startNode, Node* goalNode, std::vector<
                  
                 
                 //여기서 boolean 변수를 바꿔버리는걸로 하자 그냥.
-                //grid[newY][newX]->SetOriginalActorImage("+"); //SetOriginalActorImage?
-                //grid[newY][newX]->SetOriginalActorColor(Color::Green); //SetOriginalActorColor?
+                grid[newY][newX]->SetOriginalActorImage("+"); //SetOriginalActorImage?
+                grid[newY][newX]->SetOriginalActorColor(Color::Green); //SetOriginalActorColor?
 
                 grid[newY][newX]->GetOriginalActor()->SetTrigger(true);
                  
@@ -203,7 +204,7 @@ void AStar::FindPath_NonReturn(Node* startNode, Node* goalNode, std::vector<std:
     this->goalNode = goalNode;
 
     //시작 노드를 열린 목록에 저장.
-    openList.emplace_back(startNode);
+    openList.emplace_back(this->startNode);
 
     //Todo: 방향벡터를 만들어보는 방법 고려.
     std::vector<Direction> directions =
@@ -354,6 +355,162 @@ void AStar::FindPath_NonReturn(Node* startNode, Node* goalNode, std::vector<std:
     //return std::vector<Node*>();
 }
 
+void AStar::StartFindPath(Node* startNode, Node* goalNode)
+    /*std::vector<std::vector<Actor*>>& grid)*/
+{
+    //불 함수 true로 전환.
+    IsFindingPath = true;
+    this->startNode = startNode;
+    this->goalNode = goalNode;
+
+    openList.emplace_back(this->startNode);
+    
+}
+
+std::vector<Node*> AStar::StepOfTheFindPath(std::vector<std::vector<Actor*>>& grid)
+{
+    std::vector<Direction> directions =
+    {
+        //하 상 우 좌 순서로 이동.
+        {Vector2(0,1),1.0f}, {Vector2(0,-1),1.0f}, {Vector2(1,0),1.0f}, {Vector2(-1,0),1.0f},
+
+        {Vector2(1,1), 1.414f}, {Vector2(1,-1), 1.414f},
+        {Vector2(-1,1), 1.414f}, {Vector2(-1,-1), 1.414f},
+
+    };
+
+    if (openList.empty() == true)
+    {
+        return std::vector<Node*>();
+    }
+
+    Node* lowestNode = openList[0];
+
+    for (Node* node : openList)
+    {
+        if (node->fCost < lowestNode->fCost)
+        {
+            lowestNode = node;
+        }
+    }
+
+    Node* currentNode = lowestNode;
+
+    if (IsDestination(currentNode) == true)
+    {
+        return ConstructPath(currentNode);
+    }
+
+    for (int ix = 0; ix < (int)openList.size(); ++ix)
+    {
+        if (*openList[ix] == *currentNode)
+        {
+            openList.erase(openList.begin() + ix);
+            break;
+        }
+    }
+
+    bool isNodeInList = false;
+
+    for (Node* node : closedList)
+    {
+        if (*node == *currentNode)
+        {
+            isNodeInList = true;
+            break;
+        }
+    }
+
+    if (isNodeInList == true)
+    {
+        return std::vector<Node*>();
+    }
+
+    closedList.emplace_back(currentNode);
+
+    for (const Direction& direction : directions)
+    {
+        int newX = currentNode->NodePosition.x + direction.position.x;
+        int newY = currentNode->NodePosition.y + direction.position.y;
+        
+        Vector2 newVector = Vector2(newX, newY);
+
+        if (IsInRange(newX, newY, grid) == false)
+        {
+            continue;
+        }
+
+        if (grid[newY][newX]->GetOriginalActor()->GetNameTag() == 'W')
+        {
+            continue;
+        }
+
+        float gCost = currentNode->gCost + direction.cost;
+
+        if (HasVisited(newX, newY, gCost) == true)
+        {
+            continue;
+        }
+
+        Node* neightborNode = new Node(newVector, currentNode);
+
+        neightborNode->gCost = currentNode->gCost + direction.cost;
+
+        neightborNode->hCost = CalculateHeuistic(neightborNode, goalNode);
+
+        neightborNode->fCost = neightborNode->gCost + neightborNode->hCost;
+
+        Node* openListNode = nullptr;
+
+        for (Node* node : openList)
+        {
+            if (*node == *neightborNode)
+            {
+                openListNode = node;
+                break;
+            }
+        }
+
+        //노드가 목록에 없거나 비용이 싸면 새 노드를 추가.
+        if (openListNode == nullptr ||
+            openListNode->gCost > neightborNode->gCost ||
+            openListNode->fCost > neightborNode->fCost)
+        {
+            Vector2 test = Vector2(newX, newY);
+            //액터배열? 
+
+
+            //여기서 boolean 변수를 바꿔버리는걸로 하자 그냥.
+            grid[newY][newX]->SetOriginalActorImage("+"); //SetOriginalActorImage?
+            grid[newY][newX]->SetOriginalActorColor(Color::Green); //SetOriginalActorColor?
+
+            grid[newY][newX]->GetOriginalActor()->SetTrigger(true);
+
+
+            //음.. 위치가 같으면 같은 액터로 판정 해버리기?
+            openList.emplace_back(neightborNode);
+        }
+        else
+        {
+            //grid[newX][newY]->SetOriginalActorImage("#");
+            //grid[newX][newY]->SetOriginalActorColor(Color::Green);
+            SafeDelete(neightborNode);
+        }
+    }
+
+    return std::vector<Node*>();
+}
+
+bool AStar::HasFindingPath()
+{
+    return IsFindingPath;
+}
+
+void AStar::IsFinshedFindPath()
+{
+    IsFindingPath = false;
+}
+
 
 std::vector<Node*> AStar::ConstructPath(Node* goalNode)
 {
@@ -362,7 +519,7 @@ std::vector<Node*> AStar::ConstructPath(Node* goalNode)
     //출력용 경로 배열 선언.
     std::vector<Node*> path;
     Node* currentNode = goalNode;
-
+    
     
     while (currentNode != nullptr)
     {

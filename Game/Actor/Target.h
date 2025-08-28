@@ -8,4 +8,9 @@ class Target : public Actor
 public:
 	Target(const Vector2& position);
 
+	virtual void BeginPlay()override;
+	virtual void Tick(float DeltaTime) override;
+
+private:
+	class ICanPlayerMove* canPlayerMoveInterface = nullptr;
 };

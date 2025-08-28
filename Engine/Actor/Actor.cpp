@@ -1,9 +1,10 @@
 #include "Actor.h"
 #include <Windows.h>
-
 #include "Engine.h"
 #include "Level/Level.h"
 #include "Utils/Utils.h"
+
+bool Actor::IsTrigged = false;
 
 Actor::Actor(const char* image, Color color, const Vector2& position,char Tag)
     :color(color),position(position),NameTag(Tag)
@@ -17,6 +18,7 @@ Actor::Actor(const char* image, Color color, const Vector2& position,char Tag)
     //인자로 받은 문자열을 image변수에복사.
     strcpy_s(this->image, width + 1, image);
 
+    //IsTrigged = false;
 }
 
 Actor::~Actor()
