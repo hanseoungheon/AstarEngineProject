@@ -6,8 +6,8 @@
 
 AStar::AStar()
     :IsFindingPath(false), IsFoundPath(false),
-    HasRevertGround(false),IsFinishedPrint(false)
-    ,x(0),y(0),PrintIteratorX(0), PrintIteratorY(0), PathtIterator(0)
+    HasRevertGround(false),IsFinishedPrint(false),IsLoop(false)
+    ,x(0),y(0),PrintIteratorX(0), PrintIteratorY(0), PathIterator(0)
 {
 
 }
@@ -33,7 +33,7 @@ AStar::~AStar()
 
 }
 
-void AStar::DisplayGridWithPath(std::vector<std::vector<Actor*>>& grid, const std::vector<Node*> path)
+void AStar::DisplayGridWithPath(std::vector<std::vector<Actor*>>& grid, const std::vector<Node*>& path)
 {
     //일단 보류.
     //굳이 필요할려나?
@@ -43,6 +43,11 @@ void AStar::DisplayGridWithPath(std::vector<std::vector<Actor*>>& grid, const st
     //일단 경로 표시는 하는게 좋을듯.
 
     //변경된 땅 부분을 다시 원래대로 돌려놓기.
+    if (path.empty() == true)
+    {
+        return;
+    }
+
     if (HasRevertGround == false)
     {
         for (int y = 0; y < grid.size(); ++y)
@@ -60,67 +65,84 @@ void AStar::DisplayGridWithPath(std::vector<std::vector<Actor*>>& grid, const st
 
         HasRevertGround = true;
     }
+     
+    
     //어떤 방식으로????
     //일단 매틱마다 이 함수가 호출되지? 그럼 함수를 분리하는게 더 효율적?
     //아니면 굳이 여기서 호출을 해야됨?
     //여기서 해도 되지 않음?
     //Vector2 PathVector;
 
-    if (PathtIterator < path.size())
-    {
-        Vector2 PathVector =
-            path[PathtIterator]
-            ->GetNodePosition();
-
-        if (PrintIteratorY < grid.size())
-        {
-            if (grid[PrintIteratorY][PrintIteratorX]
-                ->GetActorPosition() == PathVector)
-            {
-                grid[PrintIteratorY][PrintIteratorX]->SetOriginalActorImage("*");
-                grid[PrintIteratorY][PrintIteratorX]->SetOriginalActorColor(Color::LightGreen);
-                ++PathtIterator;
-            }
-            ++PrintIteratorX;
-
-            if (PrintIteratorX >= (int)grid[0].size())
-            {
-                PrintIteratorX = 0;
-                ++PrintIteratorY;
-            }
-
-            if (PrintIteratorY >= (int)grid.size())
-            {
-                IsFinishedPrint = true;
-            }
-
-        }
-    }
-    else
-    {
-        IsFinishedPrint = true;
-    }
-
-
-
-
-    //전처리가 끝났다면 경로 출력.
-    //for (const Node* node : path)
+    //if (PathIterator < path.size() && HasRevertGround == true)
     //{
-    //    Vector2 PathVector = node->GetNodePosition();
-    //    for (int y = 0; y < grid.size(); ++y)
+
+    //    Vector2 PathVector = path[PathIterator]->GetNodePosition();
+
+    //    if (grid[PrintIteratorY][PrintIteratorX]
+    //        ->GetActorPosition() == PathVector)
     //    {
-    //        for (int x = 0; x < grid[0].size(); ++x)
+    //        grid[PrintIteratorY][PrintIteratorX]->SetOriginalActorImage("*");
+    //        grid[PrintIteratorY][PrintIteratorX]->SetOriginalActorColor(Color::LightGreen);
+    //        ++PathIterator;
+    //    }
+    //    ++PrintIteratorX;
+
+    //    if (PrintIteratorX >= (int)grid[0].size())
+    //    {
+    //        PrintIteratorX = 0;
+    //        ++PrintIteratorY;
+    //        if (PrintIteratorY >= (int)grid.size())
     //        {
-    //            if (grid[y][x]->GetActorPosition() == PathVector)
-    //            {
-    //                grid[y][x]->SetOriginalActorImage("*");
-    //                grid[y][x]->SetOriginalActorColor(Color::LightGreen);
-    //            }
+    //            PrintIteratorY = 0;
     //        }
     //    }
     //}
+    //else
+    //{
+    //    IsFinishedPrint = true;
+    //}
 
+    if (PathIterator < path.size() && HasRevertGround == true) 
+    {
+        //if(IsLoop == true)
+        //    std::cout << "\nThis Is Just Debug Looking for It Working?\n";
+        Vector2 PathVector = path[PathIterator]->GetNodePosition();
+
+        grid[PathVector.y][PathVector.x]->SetOriginalActorImage("*");
+        grid[PathVector.y][PathVector.x]->SetOriginalActorColor(Color::LightGreen);
+        ++PathIterator;
+    }
+    else if(PathIterator >= path.size() && HasRevertGround == true)
+    {
+        if(IsLoop == true)
+            std::cout << "\nThis Is Just Debug Looking for It Working?\n";
+        IsFinishedPrint = true;
+        //startNode->GetNodePosition();
+    }
+
+}
+
+void AStar::ClearGridAndPath(std::vector<std::vector<Actor*>>& grid,
+    std::vector<Node*>& path)
+{
+    if (IsLoop == true)
+    {
+        PathIterator = 0;
+        path.clear();
+    }
+
+    for (int y = 0; y < grid.size(); ++y)
+    {
+        for (int x = 0; x < grid[0].size(); ++x)
+        {
+            if (grid[y][x]->GetOriginalActor()->GetNameTag() == 'R' &&
+                grid[y][x]->GetOriginalActor()->GetTrigger() == true)
+            {
+                grid[y][x]->SetOriginalActorImage("."); //SetOriginalActorImage?
+                grid[y][x]->SetOriginalActorColor(Color::White); //SetOriginalActorColor?
+            }
+        }
+    }
 }
 
 
@@ -609,6 +631,37 @@ std::vector<Node*> AStar::StepOfTheFindPath(std::vector<std::vector<Actor*>>& gr
     }
    
     return std::vector<Node*>();
+}
+
+bool AStar::CheckEndFindPath()
+{
+    //안전장치 부여.
+    if (IsFindingPath == false && HasRevertGround == true 
+        && IsFoundPath == true && IsFinishedPrint == true)
+    {
+        IsFoundPath = false;
+        IsFinishedPrint = false;
+        HasRevertGround = false;
+        return true;
+    }
+    return false;
+}
+
+void AStar::ClearAstarSetting()
+{
+    for (Node* node : openList)
+    {
+        SafeDelete(node);
+    }
+    openList.clear();
+
+    for (Node* node : closedList)
+    {
+        SafeDelete(node);
+    }
+    closedList.clear();
+
+    IsLoop = true;
 }
 
 bool AStar::HasFindingPath()

@@ -4,6 +4,8 @@
 #include "Utils/Utils.h"
 #include <iostream>
 
+bool Level::IsLevelTrigged = false;
+
 Level::Level()
 {
 
@@ -153,6 +155,49 @@ void Level::Render()
 	}
 }
 
+bool Level::LineTraceSingleByChannel(HitResult& hitResult, Vector2& Start, Vector2& End,const char ActorTag)
+{
+	int distanceX = End.x - Start.x;
+	int distanceY = End.y - Start.y;
+	//라인트레이스의 거리.
+	hitResult.Distance = (float)std::sqrt(distanceX ^ 2 + distanceX ^ 2);
+
+	//hitResult.HitActor;
+	//만약 선안에 들어왔으면 HitActor 맞았다고 판정.
+	//어떻게? 좌표가 안에 있으면?
+
+
+	for (int y = Start.y; y < distanceY; ++y)
+	{
+		for (int x = Start.x; y < distanceX; ++y)
+		{
+			//이 안을 검사했을떄? Vector(x,y)이 안에 걸리면 있는거입니다잉.
+			Vector2 HitActorPosition = Vector2(x, y);
+
+			for (Actor* actor : actors)
+			{
+				if (actor->GetActorPosition() == HitActorPosition)
+				{
+					hitResult.HitActor = actor;
+					hitResult.bBlockingHit = true;
+				}
+
+	
+			}
+		}
+	}
+
+	if (hitResult.bBlockingHit == true)
+	{
+		//네임태그가 일치하면 필터에 걸렸다고 판정.
+		if (hitResult.HitActor->GetNameTag() == ActorTag)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
 void Level::AddActor(Actor* newActor)
 {
 	addRequestedActors.emplace_back(newActor);
@@ -257,6 +302,16 @@ void Level::ProcessAddAndDestroyUI_InLevel()
 	addRequestedUI.clear();
 }
 
+
+void Level::SetLevelTrigger(bool Trigging)
+{
+	IsLevelTrigged = Trigging;
+}
+
+bool Level::GetLevelTrigget()
+{
+	return IsLevelTrigged;
+}
 
 void Level::SortActorsBySortingOrder()
 {

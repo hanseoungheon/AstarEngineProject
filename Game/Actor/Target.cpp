@@ -31,7 +31,7 @@ void Target::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (Input::GetController().GetKeyDown(VK_LEFT) && IsTrigged == true)
+	if (Input::GetController().GetKeyDown(VK_LEFT) && GetOwner()->GetLevelTrigget() == true)
 	{
 		if (canPlayerMoveInterface->CanPlayerMove(GetActorPosition(),
 			Vector2(GetActorPosition().x - 1, GetActorPosition().y)))
@@ -42,7 +42,7 @@ void Target::Tick(float DeltaTime)
 		}
 	}
 
-	if (Input::GetController().GetKeyDown(VK_RIGHT) && IsTrigged == true)
+	if (Input::GetController().GetKeyDown(VK_RIGHT) && GetOwner()->GetLevelTrigget() == true)
 	{
 		if (canPlayerMoveInterface->CanPlayerMove(GetActorPosition(),
 			Vector2(GetActorPosition().x + 1, GetActorPosition().y)))
@@ -53,7 +53,7 @@ void Target::Tick(float DeltaTime)
 		}
 	}
 
-	if (Input::GetController().GetKeyDown(VK_UP) && IsTrigged == true)
+	if (Input::GetController().GetKeyDown(VK_UP) && GetOwner()->GetLevelTrigget() == true)
 	{
 		if (canPlayerMoveInterface->CanPlayerMove(GetActorPosition(),
 			Vector2(GetActorPosition().x, GetActorPosition().y - 1)))
@@ -64,7 +64,7 @@ void Target::Tick(float DeltaTime)
 		}
 	}
 
-	if (Input::GetController().GetKeyDown(VK_DOWN) && IsTrigged == true)
+	if (Input::GetController().GetKeyDown(VK_DOWN) && GetOwner()->GetLevelTrigget() == true)
 	{
 		if (canPlayerMoveInterface->CanPlayerMove(GetActorPosition(),
 			Vector2(GetActorPosition().x, GetActorPosition().y + 1)))

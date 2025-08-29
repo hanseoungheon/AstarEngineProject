@@ -13,6 +13,19 @@ public:
 	Level();
 	virtual ~Level();
 
+	struct HitResult
+	{
+		bool bBlockingHit = false;
+		Actor* HitActor = nullptr;
+		Vector2 ImpacePoint = Vector2::Zero;
+		Vector2 ImpaceNormal = Vector2::Zero;
+		float Distance = 0.0f;
+	};
+
+
+	bool LineTraceSingleByChannel(HitResult& hitResult, Vector2& Start = Vector2::Zero, Vector2& End = Vector2::Zero, 
+		const char ActorTag = ' ');
+	/*const std::vector<Actor*>IgnoreActorType*/
 	// 레벨에 액터를 추가할 때 사용
 	void AddActor(Actor* newActor);
 	void AddUI(UI* newUI);
@@ -47,6 +60,9 @@ public:
 		tempActor.clear();
 	}
 
+	void SetLevelTrigger(bool Trigging);
+	bool GetLevelTrigget();
+
 private:
 	void SortActorsBySortingOrder();
 
@@ -70,6 +86,6 @@ protected:
 	std::vector<UI*> addRequestedUI;
 	std::vector<UI*> destroyRequestedUI;
 
-
+	static bool IsLevelTrigged;
 
 };

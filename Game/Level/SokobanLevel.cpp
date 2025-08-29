@@ -11,7 +11,6 @@
 #include <iostream>
 
 SokobanLevel::SokobanLevel()
-    :IsChageTheCharacter(false)
 {
 
 
@@ -67,6 +66,7 @@ void SokobanLevel::BeginPlay()
     //FindStartAndGoal(&startNode, &goalNode);
     FindStartAndGoal_Using_Vector(startPos, goalPos);
 
+
 }
 
 void SokobanLevel::Tick(float DeltaTime)
@@ -74,58 +74,96 @@ void SokobanLevel::Tick(float DeltaTime)
     Super::Tick(DeltaTime);
     
     ++JumpTick;
-    std::vector<Node*> path;
+
     if (Astar.HasFindingPath() == true)
     {
         //여기서 계속 돌리게 만들어야함?->완료.
         path = Astar.StepOfTheFindPath(MapGrid);
     }
 
-    //if (Astar.HasFoundPath() == true)
-    //{
-    //    Astar.DisplayGridWithPath(MapGrid, path);
-    //}
-
+    //찾는데 성공하면 기존 +를 전부 지우고 경로를 출력.
     if (Astar.HasFoundPath() == true && Astar.HasFinishedPrint() == false)
     {
+        //둘로 쪼개서 연속성 부여 고려.
+        //안쪼개고 하나에 변수를 대입해서 해보는건?
         Astar.DisplayGridWithPath(MapGrid, path);
+    }
+    else if (Astar.HasFoundPath() == true && Astar.HasFinishedPrint() == true)
+    {
+        //길을 다 찾으면 플레이어와 타겟 다시 원래대도 원상복귀시키기.
+        for (Actor* actor : actors)
+        {
+            Player* player = actor->As<Player>();
+            Target* target = actor->As<Target>();
+
+            if (player != nullptr)
+            {
+                player->SetImage("P");
+                player->SetColor(Color::Red);
+            }
+
+            if (target != nullptr)
+            {
+
+                target->SetImage("T");
+                target->SetColor(Color::Blue);
+            }
+        }
+
+        //만약 길을 다 찾았으면 초기화?
+        if (Astar.CheckEndFindPath() == true)
+        {
+            Astar.ClearAstarSetting();
+        }
     }
 
 
-    //FindStartAndGoal(&startNode, &goalNode);
+
+    //입력 매핑
+    
+    //A*를 이용한 경로 찾기 실행.
     if (Input::GetController().GetKeyDown(VK_SPACE))
     {
+        Astar.ClearGridAndPath(MapGrid,path);
         //Astar.StartFindPath(startNode, goalNode);
         Astar.StartFindPath_Using_Vector(startPos, goalPos);
        //Astar.FindPath_NonReturn(startNode,goalNode,MapGrid);
     }
 
+    //플레이어<->타겟 컨트롤러 전환.
     if (Input::GetController().GetKeyDown(VK_RETURN))
     {
+        //for (Actor* actor : actors)
+        //{
+        //    Player* player = actor->As<Player>();
+        //    //혹시 모르니 안전장치 해놓는게 편할듯?
 
-        for (Actor* actor : actors)
-        {
-            Player* player = actor->As<Player>();
-            //혹시 모르니 안전장치 해놓는게 편할듯?
+        //    if (player != nullptr)
+        //    {
+        //        player->SetTrigger(!player->GetTrigger());
+        //        IsChageTheCharacter = !IsChageTheCharacter;
+        //    }
+        //}
 
 
-            if (player != nullptr)
-            {
-                player->SetTrigger(!player->GetTrigger());
-                IsChageTheCharacter = !IsChageTheCharacter;
-            }
-        }
+        IsLevelTrigged = !IsLevelTrigged;
 
         for (UI* UI_InLevel : ui_inLevel)
         {
             Color_UI* colorUI = UI_InLevel->As<Color_UI>();
 
-            //트리거가 작동하지않은 상태 즉 false면 플레이어가이동하고, 작동한 상태 즉 true면 타겟이 이동.
+            //트리거가 작동하지않은 상태 즉 false면 플레이어가이동하고,
+            //작동한 상태 즉 true면 타겟이 이동.
             if (colorUI != nullptr)
             {
-                colorUI->SetActiveColor(IsChageTheCharacter);
+                colorUI->SetActiveColor(IsLevelTrigged);
             }
         }
+    }
+
+    if (Input::GetController().GetKeyDown(VK_TAB))
+    {
+        Astar.ClearGridAndPath(MapGrid, path);
     }
 }
 
@@ -183,25 +221,20 @@ void SokobanLevel::ReadMapFile(const char* fileName)
         switch (mapCharcter)
         {
         case '#':
-        case '1':
             AddActor(new Wall(position));
             break;
 
         case '0':
-        case'.':
             AddActor(new Ground(position));
             break;
 
         case'P':
-        case'p':
             AddActor(new Ground(position));
             AddActor(new Player(position));
             break;
 
-        case 'b':
-
-        case't':
         case'G':
+            AddActor(new Ground(position));
             AddActor(new Target(position));
             break;
         }
@@ -346,6 +379,8 @@ void SokobanLevel::HowToMovementAndOtherManualUI()
     //AddActor(new Custom_UI("ArrowKeys: Object Movement", Color::White, Vector2(0, 11)));
     AddUI(new Custom_UI("ArrowKeys: Object Movement", Color::Green, Vector2(0, 11)));
     AddUI(new Custom_UI("SpaceBar: FindTarget to using Astar", Color::Purple, Vector2(0, 12)));
+    AddUI(new Custom_UI("Clear: Clear Astar Route", Color::Yellow, Vector2(0, 13)));
+    AddUI(new Custom_UI("ESC: ShutDown This Simulation\n", Color::Gray, Vector2(0, 14)));
 }
 
 bool SokobanLevel::CanPlayerMove(const Vector2& playerPosition, const Vector2& newPosition)

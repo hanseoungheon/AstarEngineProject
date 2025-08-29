@@ -26,12 +26,15 @@ void Player::BeginPlay()
 		{
 			std::cout << "Can not cast owener level to ICanPlayerMove.\n";
 		}
+
 	}
+
 }
 
 void Player::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
 
 	if (Input::GetController().GetKeyDown(VK_ESCAPE))
 	{
@@ -45,7 +48,8 @@ void Player::Tick(float DeltaTime)
 	//	IsTrigged = !IsTrigged;
 	//}
 
-	if (Input::GetController().GetKeyDown(VK_LEFT) && IsTrigged == false)
+	
+	if (Input::GetController().GetKeyDown(VK_LEFT) && GetOwner()->GetLevelTrigget() == false)
 	{
 		if (canPlayerMoveInterface->CanPlayerMove(GetActorPosition(),
 			Vector2(GetActorPosition().x - 1, GetActorPosition().y)))
@@ -56,7 +60,7 @@ void Player::Tick(float DeltaTime)
 		}
 	}
 
-	if (Input::GetController().GetKeyDown(VK_RIGHT) && IsTrigged == false)
+	if (Input::GetController().GetKeyDown(VK_RIGHT) && GetOwner()->GetLevelTrigget() == false)
 	{
 		if (canPlayerMoveInterface->CanPlayerMove(GetActorPosition(),
 			Vector2(GetActorPosition().x + 1, GetActorPosition().y)))
@@ -67,7 +71,7 @@ void Player::Tick(float DeltaTime)
 		}
 	}
 
-	if (Input::GetController().GetKeyDown(VK_UP) && IsTrigged == false)
+	if (Input::GetController().GetKeyDown(VK_UP) && GetOwner()->GetLevelTrigget() == false)
 	{
 		if (canPlayerMoveInterface->CanPlayerMove(GetActorPosition(),
 			Vector2(GetActorPosition().x, GetActorPosition().y - 1)))
@@ -78,7 +82,7 @@ void Player::Tick(float DeltaTime)
 		}
 	}
 
-	if (Input::GetController().GetKeyDown(VK_DOWN) && IsTrigged == false)
+	if (Input::GetController().GetKeyDown(VK_DOWN) && GetOwner()->GetLevelTrigget() == false)
 	{
 		if (canPlayerMoveInterface->CanPlayerMove(GetActorPosition(),
 			Vector2(GetActorPosition().x, GetActorPosition().y + 1)))

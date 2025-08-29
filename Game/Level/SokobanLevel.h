@@ -18,6 +18,15 @@ public:
 		const Vector2& playerPosition,
 		const Vector2& newPosition) override;
 
+	Level* GetThisLevel()
+	{
+		if (this != nullptr)
+		{
+			Level* GetOwner = dynamic_cast<Level*>(this);
+
+			return GetOwner;
+		}
+	}
 
 private:
 	virtual void BeginPlay() override;
@@ -38,11 +47,10 @@ private:
 
 public:
 	//Getter
-
 private:
 	int targetScore = 0;
 	bool isGameClear = false;
-
+	
 	//Tick 계산 및 프레임호출에서 프레임 건너뛰기 용
 	int JumpTick = 0;
 
@@ -56,7 +64,8 @@ private:
 	Vector2 startPos;
 	Vector2 goalPos;
 
-	bool IsChageTheCharacter = false;
+	//bool IsChageTheCharacter = false;
 
 	int iterator = 0;
+	std::vector<Node*> path;
 };

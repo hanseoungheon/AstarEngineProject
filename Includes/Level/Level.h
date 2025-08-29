@@ -47,6 +47,9 @@ public:
 		tempActor.clear();
 	}
 
+	void SetLevelTrigger(bool Trigging);
+	bool GetLevelTrigget();
+
 private:
 	void SortActorsBySortingOrder();
 
@@ -70,6 +73,6 @@ protected:
 	std::vector<UI*> addRequestedUI;
 	std::vector<UI*> destroyRequestedUI;
 
-
+	static bool IsLevelTrigged;
 
 };
