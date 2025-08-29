@@ -35,11 +35,13 @@ public:
 	//);
 
 	void StartFindPath(Node* startNode, Node* goalNode);
+	void StartFindPath_Using_Vector(Vector2& startPos, Vector2& goalPos);
 
 	std::vector<Node*> StepOfTheFindPath(std::vector<std::vector<Actor*>>& grid);
 
 	bool HasFindingPath();
 	bool HasFoundPath();
+	bool HasFinishedPrint();
 	void IsFinshedFindPath();
 	//그리드 출력 함수. 그리드를 액터로 출력해야하나..? 아니면..?
 	void DisplayGridWithPath(std::vector<std::vector<Actor*>>& grid,
@@ -79,6 +81,10 @@ private:
 	bool IsFindingPath = false;
 	bool IsFoundPath = false;
 	bool HasRevertGround = false;
-
+	bool IsFinishedPrint = false;
 	int x, y;
+
+	int PrintIteratorX;
+	int PrintIteratorY;
+	int PathtIterator;
 };

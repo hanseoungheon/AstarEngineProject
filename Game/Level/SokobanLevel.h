@@ -11,6 +11,7 @@ class SokobanLevel : public Level, public ICanPlayerMove
 
 public:
 	SokobanLevel();
+	~SokobanLevel();
 
 	// ICanPlayerMove을(를) 통해 상속됨
 	virtual bool CanPlayerMove(
@@ -27,11 +28,13 @@ private:
 	bool CheckGameClear();
 
 	void FindStartAndGoal(Node** outStartNode,Node** outGoalNode);
+	void FindStartAndGoal_Using_Vector(Vector2& startPos,Vector2& goalPos);
 
 	void FindOriginalActor();
 
 	void CreatePlayerAndTargetStatUI();
 	void HowToMovementAndOtherManualUI();
+
 
 public:
 	//Getter
@@ -43,11 +46,17 @@ private:
 	//Tick 계산 및 프레임호출에서 프레임 건너뛰기 용
 	int JumpTick = 0;
 
+
 	std::vector<std::vector<Actor*>> MapGrid;
+
 
 	AStar Astar;
 	Node* startNode = nullptr;
 	Node* goalNode = nullptr;
+	Vector2 startPos;
+	Vector2 goalPos;
 
 	bool IsChageTheCharacter = false;
+
+	int iterator = 0;
 };

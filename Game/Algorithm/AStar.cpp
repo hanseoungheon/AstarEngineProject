@@ -5,7 +5,9 @@
 #include <iostream>
 
 AStar::AStar()
-    :IsFindingPath(false), IsFoundPath(false),HasRevertGround(false),x(0),y(0)
+    :IsFindingPath(false), IsFoundPath(false),
+    HasRevertGround(false),IsFinishedPrint(false)
+    ,x(0),y(0),PrintIteratorX(0), PrintIteratorY(0), PathtIterator(0)
 {
 
 }
@@ -24,6 +26,11 @@ AStar::~AStar()
     }
     closedList.clear();
 
+    if (goalNode != nullptr)
+    {
+        delete goalNode;
+    }
+
 }
 
 void AStar::DisplayGridWithPath(std::vector<std::vector<Actor*>>& grid, const std::vector<Node*> path)
@@ -34,6 +41,8 @@ void AStar::DisplayGridWithPath(std::vector<std::vector<Actor*>>& grid, const st
     //가져가서 붙혀버리기? 생성자는 굳이?
 
     //일단 경로 표시는 하는게 좋을듯.
+
+    //변경된 땅 부분을 다시 원래대로 돌려놓기.
     if (HasRevertGround == false)
     {
         for (int y = 0; y < grid.size(); ++y)
@@ -51,30 +60,54 @@ void AStar::DisplayGridWithPath(std::vector<std::vector<Actor*>>& grid, const st
 
         HasRevertGround = true;
     }
+    //어떤 방식으로????
+    //일단 매틱마다 이 함수가 호출되지? 그럼 함수를 분리하는게 더 효율적?
+    //아니면 굳이 여기서 호출을 해야됨?
+    //여기서 해도 되지 않음?
+    //Vector2 PathVector;
 
-
-    for (const Node* node : path)
+    if (PathtIterator < path.size())
     {
-        Vector2 PathVector = node->GetNodePosition();
-        for (int y = 0; y < grid.size(); ++y)
+        Vector2 PathVector =
+            path[PathtIterator]
+            ->GetNodePosition();
+
+        if (PrintIteratorY < grid.size())
         {
-            for (int x = 0; x < grid[0].size(); ++x)
+            if (grid[PrintIteratorY][PrintIteratorX]
+                ->GetActorPosition() == PathVector)
             {
-                if (grid[y][x]->GetActorPosition() == PathVector)
-                {
-                    grid[y][x]->SetOriginalActorImage("*");
-                    grid[y][x]->SetOriginalActorColor(Color::LightGreen);
-                }
+                grid[PrintIteratorY][PrintIteratorX]->SetOriginalActorImage("*");
+                grid[PrintIteratorY][PrintIteratorX]->SetOriginalActorColor(Color::LightGreen);
+                ++PathtIterator;
             }
+            ++PrintIteratorX;
+
+            if (PrintIteratorX >= (int)grid[0].size())
+            {
+                PrintIteratorX = 0;
+                ++PrintIteratorY;
+            }
+
+            if (PrintIteratorY >= (int)grid.size())
+            {
+                IsFinishedPrint = true;
+            }
+
         }
     }
+    else
+    {
+        IsFinishedPrint = true;
+    }
 
-    //Node* node = nullptr;
 
-    //if (x < path.size())
+
+
+    //전처리가 끝났다면 경로 출력.
+    //for (const Node* node : path)
     //{
-    //    Vector2 PathVector = path[x++]->GetNodePosition();
-
+    //    Vector2 PathVector = node->GetNodePosition();
     //    for (int y = 0; y < grid.size(); ++y)
     //    {
     //        for (int x = 0; x < grid[0].size(); ++x)
@@ -86,8 +119,8 @@ void AStar::DisplayGridWithPath(std::vector<std::vector<Actor*>>& grid, const st
     //            }
     //        }
     //    }
-
     //}
+
 }
 
 
@@ -424,6 +457,15 @@ void AStar::StartFindPath(Node* startNode, Node* goalNode)
     
 }
 
+void AStar::StartFindPath_Using_Vector(Vector2& startPos, Vector2& goalPos)
+{
+    IsFindingPath = true;
+    startNode = new Node(startPos);
+    goalNode = new Node(goalPos);
+
+    openList.emplace_back(startNode);
+}
+
 std::vector<Node*> AStar::StepOfTheFindPath(std::vector<std::vector<Actor*>>& grid)
 {
     std::vector<Direction> directions =
@@ -577,6 +619,11 @@ bool AStar::HasFindingPath()
 bool AStar::HasFoundPath()
 {
     return IsFoundPath;
+}
+
+bool AStar::HasFinishedPrint()
+{
+    return IsFinishedPrint;
 }
 
 void AStar::IsFinshedFindPath()

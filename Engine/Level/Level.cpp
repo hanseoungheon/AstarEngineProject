@@ -18,12 +18,18 @@ Level::~Level()
 
 	actors.clear();
 
+	for (Actor* actor : tempActor)
+	{
+		SafeDelete(actor);
+	}
+
+	tempActor.clear();
 	for (UI* UI_InLevel : ui_inLevel)
 	{
 		SafeDelete(UI_InLevel);
 	}
-
 	ui_inLevel.clear();
+
 }
 
 void Level::BeginPlay()

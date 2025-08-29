@@ -22,6 +22,41 @@ SokobanLevel::SokobanLevel()
     //Vector2 position = Vector2(0, 0);
     //AddActor(new Wall(position));
 
+    //FindStartAndGoal(&startNode, &goalNode);
+}
+
+SokobanLevel::~SokobanLevel()
+{
+    //for (int i = 0; i < MapGrid.size() - 1; ++i)
+    //{
+    //    //MapGrid[0]
+    //    for (Actor* actor : MapGrid[i])
+    //    {
+    //        SafeDelete(actor);
+    //    }
+    //}
+    //MapGrid.clear();
+
+    //for (Actor* actor : MapGrid[0])
+    //    SafeDelete(actor);
+    
+    //SafeDelete(MapGrid[0][0]);
+
+    for (int i = 0; i < MapGrid.size(); ++i)
+    {
+        MapGrid[i].clear();
+    }
+    MapGrid.clear();
+
+    if (startNode != nullptr)
+    {
+        delete startNode;
+    }
+
+    if (goalNode != nullptr)
+    {
+        delete goalNode;
+    }
 
 }
 
@@ -29,9 +64,8 @@ void SokobanLevel::BeginPlay()
 {
     Super::BeginPlay();
     FindOriginalActor();
-
-
-    FindStartAndGoal(&startNode, &goalNode);
+    //FindStartAndGoal(&startNode, &goalNode);
+    FindStartAndGoal_Using_Vector(startPos, goalPos);
 
 }
 
@@ -47,7 +81,12 @@ void SokobanLevel::Tick(float DeltaTime)
         path = Astar.StepOfTheFindPath(MapGrid);
     }
 
-    if (Astar.HasFoundPath() == true)
+    //if (Astar.HasFoundPath() == true)
+    //{
+    //    Astar.DisplayGridWithPath(MapGrid, path);
+    //}
+
+    if (Astar.HasFoundPath() == true && Astar.HasFinishedPrint() == false)
     {
         Astar.DisplayGridWithPath(MapGrid, path);
     }
@@ -56,7 +95,8 @@ void SokobanLevel::Tick(float DeltaTime)
     //FindStartAndGoal(&startNode, &goalNode);
     if (Input::GetController().GetKeyDown(VK_SPACE))
     {
-        Astar.StartFindPath(startNode, goalNode);
+        //Astar.StartFindPath(startNode, goalNode);
+        Astar.StartFindPath_Using_Vector(startPos, goalPos);
        //Astar.FindPath_NonReturn(startNode,goalNode,MapGrid);
     }
 
@@ -138,16 +178,7 @@ void SokobanLevel::ReadMapFile(const char* fileName)
     {
         char mapCharcter = buffer[index++];
 
-        if (mapCharcter == '\n')
-        {
-            MapGrid.emplace_back(GetActorBuffer());
-            //MapBuffer.clear();
-            ClearActorBuffer();
-            ++position.y;
-            position.x = 0;
 
-            continue;
-        }
 
         switch (mapCharcter)
         {
@@ -175,11 +206,23 @@ void SokobanLevel::ReadMapFile(const char* fileName)
             break;
         }
         ++position.x;
+
+        if (mapCharcter == '\n')
+        {
+            MapGrid.emplace_back(GetActorBuffer());
+            //MapBuffer.clear();
+            ClearActorBuffer();
+            ++position.y;
+            position.x = 0;
+
+            continue;
+        }
     }
 
     delete[] buffer;
-
     fclose(file);
+
+    //delete[] fileName;
 }
 
 
@@ -223,7 +266,7 @@ void SokobanLevel::FindStartAndGoal(Node** outStartNode, Node** outGoalNode)
             if (actor->GetOriginalActor()->GetNameTag() == 'P')
             {
                 *outStartNode = new Node(actor->GetActorPosition());
-                //actor->GetOriginalActor()->SetColor(Color::Green); 디버그용
+                //actor->GetOriginalActor()->SetColor(Color::Green); //디버그용
                 continue;
             }
 
@@ -239,6 +282,38 @@ void SokobanLevel::FindStartAndGoal(Node** outStartNode, Node** outGoalNode)
         }
     }
 
+}
+
+void SokobanLevel::FindStartAndGoal_Using_Vector(Vector2& outstartPos, Vector2& outgoalPos)
+{
+    bool foundStart = false;
+    bool foundGoal = false;
+
+    for (int iterator = 0; iterator < MapGrid.size(); ++iterator)
+    {
+
+        for (Actor* actor : MapGrid[iterator])
+        {
+            if (actor->GetOriginalActor()->GetNameTag() == 'P')
+            {
+                outstartPos = actor->GetActorPosition();
+                foundStart = true;
+            }
+
+            if (actor->GetOriginalActor()->GetNameTag() == 'G')
+            {
+                outgoalPos = actor->GetActorPosition();
+                foundGoal = true;
+            }
+
+            if (foundStart == true && foundGoal == true)
+            {
+                return;
+            }
+
+        }
+
+    }
 }
 
 void SokobanLevel::FindOriginalActor()
@@ -289,3 +364,4 @@ bool SokobanLevel::CanPlayerMove(const Vector2& playerPosition, const Vector2& n
     }
     return false;
 }
+

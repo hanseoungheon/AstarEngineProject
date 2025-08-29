@@ -13,6 +13,20 @@ public:
 
 	}
 
+	~Node()
+	{
+		//delete this;
+		//if (parent != nullptr)
+		//{
+		//	delete parent;
+		//}
+
+		//if (this != nullptr)
+		//{
+		//	delete this;
+		//}
+	}
+
 	Vector2 operator-(const Node& other)
 	{
 		return Vector2(

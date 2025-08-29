@@ -23,8 +23,10 @@ Actor::Actor(const char* image, Color color, const Vector2& position,char Tag)
 
 Actor::~Actor()
 {
+    //SafeDelete(OriginalActor);
     SafeDeleteArray(image);
     SafeDeleteArray(returnImage);
+
 }
 
 void Actor::BeginPlay()
@@ -198,7 +200,7 @@ void Actor::SetOriginalActorImage(const char* newImage)
     
     if (OriginalActor->image != nullptr)
     {
-        OriginalActor->image = nullptr;
+        SafeDeleteArray(OriginalActor->image);
     }
 
     OriginalActor->image = new char[length];

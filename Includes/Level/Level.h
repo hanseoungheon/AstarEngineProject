@@ -39,6 +39,11 @@ public:
 
 	void ClearActorBuffer()
 	{
+		//for (Actor* actor : tempActor)
+		//{
+		//	SafeDelete(actor);
+		//}
+
 		tempActor.clear();
 	}
 
@@ -61,7 +66,10 @@ protected:
 	//탐탁치 않지만 엔진에서 에이스타를 위한 벡터배열 추가해버리기.
 	std::vector<Actor*> tempActor;
 
+
 	std::vector<UI*> addRequestedUI;
 	std::vector<UI*> destroyRequestedUI;
+
+
 
 };
