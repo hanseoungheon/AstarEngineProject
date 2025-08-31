@@ -3,5 +3,5 @@
 Wall::Wall(const Vector2& position)
 	:Actor("#",Color::White,position,'W')
 {
-	SetSortingOrder(0);
+	SetSortingOrder(1);
 }

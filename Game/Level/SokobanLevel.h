@@ -34,6 +34,8 @@ private:
 	virtual void Render() override;
 	void ReadMapFile(const char* fileName);
 
+	//MapGrid √÷Ω≈»≠
+	void UpdateMapGrid();
 	bool CheckGameClear();
 
 	void FindStartAndGoal(Node** outStartNode,Node** outGoalNode);

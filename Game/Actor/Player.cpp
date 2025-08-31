@@ -1,6 +1,6 @@
 #include "Player.h"
 #include "Engine.h"
-#include "Game/Game.h"
+
 #include "Input.h"
 #include "Level/Level.h"
 #include "Interface/ICanPlayerMove.h"
@@ -36,20 +36,15 @@ void Player::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 
-	if (Input::GetController().GetKeyDown(VK_ESCAPE))
+
+	if (Input::GetController().GetKeyDown(VK_RETURN))
 	{
-		Game::Get().Quit();
-		return;
+		//IsTrigged는 static 변수입니다.
+		IsTrigged = !IsTrigged;
 	}
 
-	//if (Input::GetController().GetKeyDown(VK_RETURN))
-	//{
-	//	//IsTrigged는 static 변수입니다.
-	//	IsTrigged = !IsTrigged;
-	//}
-
 	
-	if (Input::GetController().GetKeyDown(VK_LEFT) && GetOwner()->GetLevelTrigget() == false)
+	if (Input::GetController().GetKeyDown(VK_NUMPAD4) && GetOwner()->GetLevelTrigget() == false)
 	{
 		if (canPlayerMoveInterface->CanPlayerMove(GetActorPosition(),
 			Vector2(GetActorPosition().x - 1, GetActorPosition().y)))
@@ -60,7 +55,7 @@ void Player::Tick(float DeltaTime)
 		}
 	}
 
-	if (Input::GetController().GetKeyDown(VK_RIGHT) && GetOwner()->GetLevelTrigget() == false)
+	if (Input::GetController().GetKeyDown(VK_NUMPAD6) && GetOwner()->GetLevelTrigget() == false)
 	{
 		if (canPlayerMoveInterface->CanPlayerMove(GetActorPosition(),
 			Vector2(GetActorPosition().x + 1, GetActorPosition().y)))
@@ -71,7 +66,7 @@ void Player::Tick(float DeltaTime)
 		}
 	}
 
-	if (Input::GetController().GetKeyDown(VK_UP) && GetOwner()->GetLevelTrigget() == false)
+	if (Input::GetController().GetKeyDown(VK_NUMPAD8) && GetOwner()->GetLevelTrigget() == false)
 	{
 		if (canPlayerMoveInterface->CanPlayerMove(GetActorPosition(),
 			Vector2(GetActorPosition().x, GetActorPosition().y - 1)))
@@ -82,7 +77,7 @@ void Player::Tick(float DeltaTime)
 		}
 	}
 
-	if (Input::GetController().GetKeyDown(VK_DOWN) && GetOwner()->GetLevelTrigget() == false)
+	if (Input::GetController().GetKeyDown(VK_NUMPAD2) && GetOwner()->GetLevelTrigget() == false)
 	{
 		if (canPlayerMoveInterface->CanPlayerMove(GetActorPosition(),
 			Vector2(GetActorPosition().x, GetActorPosition().y + 1)))

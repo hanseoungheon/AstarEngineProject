@@ -188,12 +188,12 @@ void Engine::Quit()
 
 int Engine::ConsoleHeight() const
 {
-	return engineSetting.width;
+	return engineSetting.height;
 }
 
 int Engine::ConsoleWidth() const
 {
-	return engineSetting.height;
+	return engineSetting.width;
 }
 
 void Engine::LoadEngineSetting()

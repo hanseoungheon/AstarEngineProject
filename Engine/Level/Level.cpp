@@ -3,7 +3,7 @@
 #include "Actor/UI.h"
 #include "Utils/Utils.h"
 #include <iostream>
-
+#include <string>
 bool Level::IsLevelTrigged = false;
 
 Level::Level()
@@ -20,10 +20,10 @@ Level::~Level()
 
 	actors.clear();
 
-	for (Actor* actor : tempActor)
-	{
-		SafeDelete(actor);
-	}
+	//for (Actor* actor : tempActor)
+	//{
+	//	SafeDelete(actor);
+	//}
 
 	tempActor.clear();
 	for (UI* UI_InLevel : ui_inLevel)
@@ -39,7 +39,7 @@ void Level::BeginPlay()
 	for (Actor* actor : actors)
 	{
 		//삭제 요청이 들어오거나 활성화가 안된 상태의 액터는 건너뜀
-		if (actor->isActive == false || actor->isExpired == true)
+		if (actor == nullptr || actor->isActive == false || actor->isExpired == true)
 		{
 			continue;
 		}
@@ -53,6 +53,13 @@ void Level::BeginPlay()
 		//액터 실행시키기.
 		actor->BeginPlay();
 	}
+
+	//for (Actor* actor : actors) {
+	//	if (!actor) continue;                 // nullptr 방어
+	//	if (actor->isExpired) continue;       // 삭제 예약이면 스킵
+	//	if (actor->HasBeganPlay()) continue;
+	//	actor->BeginPlay();
+	//}
 
 	for (UI* UI_InLevel : ui_inLevel)
 	{
@@ -74,7 +81,7 @@ void Level::Tick(float DeltaTime)
 {
 	for (Actor* actor : actors)
 	{
-		if (actor->isActive == false || actor->isExpired == true)
+		if (actor == nullptr || actor->isActive == false || actor->isExpired == true)
 		{
 			continue;
 		}
@@ -155,48 +162,48 @@ void Level::Render()
 	}
 }
 
-bool Level::LineTraceSingleByChannel(HitResult& hitResult, Vector2& Start, Vector2& End,const char ActorTag)
-{
-	int distanceX = End.x - Start.x;
-	int distanceY = End.y - Start.y;
-	//라인트레이스의 거리.
-	hitResult.Distance = (float)std::sqrt(distanceX ^ 2 + distanceX ^ 2);
-
-	//hitResult.HitActor;
-	//만약 선안에 들어왔으면 HitActor 맞았다고 판정.
-	//어떻게? 좌표가 안에 있으면?
-
-
-	for (int y = Start.y; y < distanceY; ++y)
-	{
-		for (int x = Start.x; y < distanceX; ++y)
-		{
-			//이 안을 검사했을떄? Vector(x,y)이 안에 걸리면 있는거입니다잉.
-			Vector2 HitActorPosition = Vector2(x, y);
-
-			for (Actor* actor : actors)
-			{
-				if (actor->GetActorPosition() == HitActorPosition)
-				{
-					hitResult.HitActor = actor;
-					hitResult.bBlockingHit = true;
-				}
-
-	
-			}
-		}
-	}
-
-	if (hitResult.bBlockingHit == true)
-	{
-		//네임태그가 일치하면 필터에 걸렸다고 판정.
-		if (hitResult.HitActor->GetNameTag() == ActorTag)
-		{
-			return true;
-		}
-	}
-	return false;
-}
+//bool Level::LineTraceSingleByChannel(HitResult& hitResult, Vector2& Start, Vector2& End,const char ActorTag)
+//{
+//	int distanceX = End.x - Start.x;
+//	int distanceY = End.y - Start.y;
+//	//라인트레이스의 거리.
+//	hitResult.Distance = (float)std::sqrt(distanceX ^ 2 + distanceX ^ 2);
+//
+//	//hitResult.HitActor;
+//	//만약 선안에 들어왔으면 HitActor 맞았다고 판정.
+//	//어떻게? 좌표가 안에 있으면?
+//
+//
+//	for (int y = Start.y; y < distanceY; ++y)
+//	{
+//		for (int x = Start.x; y < distanceX; ++y)
+//		{
+//			//이 안을 검사했을떄? Vector(x,y)이 안에 걸리면 있는거입니다잉.
+//			Vector2 HitActorPosition = Vector2(x, y);
+//
+//			for (Actor* actor : actors)
+//			{
+//				if (actor->GetActorPosition() == HitActorPosition)
+//				{
+//					hitResult.HitActor = actor;
+//					hitResult.bBlockingHit = true;
+//				}
+//
+//	
+//			}
+//		}
+//	}
+//
+//	if (hitResult.bBlockingHit == true)
+//	{
+//		//네임태그가 일치하면 필터에 걸렸다고 판정.
+//		if (hitResult.HitActor->GetNameTag() == ActorTag)
+//		{
+//			return true;
+//		}
+//	}
+//	return false;
+//}
 
 void Level::AddActor(Actor* newActor)
 {
@@ -206,7 +213,20 @@ void Level::AddActor(Actor* newActor)
 }
 void Level::DestroyActor(Actor* destroyedActor)
 {
+	if (destroyedActor == nullptr || destroyedActor->isExpired == true)
+	{
+		return;
+	}
+
+	destroyedActor->isExpired = true;
+
+	//if (std::find(destroyRequstedActors.begin(),destroyRequstedActors.end(),destroyedActor)
+	//	== destroyRequstedActors.end())
+	//{
+	//	destroyRequstedActors.emplace_back(destroyedActor);
+	//}
 	destroyRequstedActors.emplace_back(destroyedActor);
+
 }
 
 void Level::AddUI(UI* newUI)
@@ -221,6 +241,23 @@ void Level::DestroyUI(UI* destroyedUI)
 
 void Level::ProcessAddAndDestroyActors()
 {
+
+	//// 1) actors에서 만료된 포인터 먼저 제거
+	//for (auto it = actors.begin(); it != actors.end(); )
+	//	it = ((*it)->isExpired) ? actors.erase(it) : std::next(it);
+
+	//// 2) 파괴 큐 실제 delete
+	//for (Actor* a : destroyRequstedActors) {
+	//	// (여기서 콘솔 지우기 등 부가작업을 하더라도)
+	//	SafeDelete(a);
+	//}
+	//destroyRequstedActors.clear();
+
+	//// 3) 추가 큐 반영
+	//for (Actor* a : addRequestedActors) { actors.push_back(a); a->SetOwner(this); }
+	//addRequestedActors.clear();
+
+
 	for (auto iterator = actors.begin(); iterator != actors.end();)
 	{
 		//삭제 요청된 액터 확인 후 배열에서 제외시키는 함수.
@@ -258,6 +295,8 @@ void Level::ProcessAddAndDestroyActors()
 
 	//배열 초기화.
 	addRequestedActors.clear();
+
+
 }
 
 

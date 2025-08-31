@@ -6,6 +6,7 @@
 #include "Actor/Wall.h"
 #include "Actor/Target.h"
 #include "Actor/Ground.h"
+#include "Actor/Creator.h"
 #include "Actor_UI/Custom_UI.h"
 #include "Actor_UI/Color_UI.h"
 #include <iostream>
@@ -17,7 +18,7 @@ SokobanLevel::SokobanLevel()
     CreatePlayerAndTargetStatUI();
     HowToMovementAndOtherManualUI();
 
-    ReadMapFile("Stage_Astar.txt");
+    ReadMapFile("Stage_Astar_final.txt");
     //Vector2 position = Vector2(0, 0);
     //AddActor(new Wall(position));
 
@@ -95,7 +96,13 @@ void SokobanLevel::Tick(float DeltaTime)
         {
             Player* player = actor->As<Player>();
             Target* target = actor->As<Target>();
+            Creator* creator = actor->As<Creator>();
 
+            if (creator != nullptr)
+            {
+                creator->SetImage("C");
+                creator->SetColor(Color::Yellow);
+            }
             if (player != nullptr)
             {
                 player->SetImage("P");
@@ -108,6 +115,8 @@ void SokobanLevel::Tick(float DeltaTime)
                 target->SetImage("T");
                 target->SetColor(Color::Blue);
             }
+
+
         }
 
         //만약 길을 다 찾았으면 초기화?
@@ -124,6 +133,35 @@ void SokobanLevel::Tick(float DeltaTime)
     //A*를 이용한 경로 찾기 실행.
     if (Input::GetController().GetKeyDown(VK_SPACE))
     {
+        Player* player = nullptr;
+        Target* target = nullptr;
+
+        for (Actor* actor : actors)
+        {
+            player = actor->As<Player>();
+
+            if (player != nullptr)
+            {
+                break;
+            }
+
+        }
+
+        for (Actor* actor : actors)
+        {
+            target = actor->As<Target>();
+
+            if (target != nullptr)
+            {
+                break;
+            }
+        }
+
+        if (player == nullptr || target == nullptr)
+        {
+            return;
+        }
+        
         Astar.ClearGridAndPath(MapGrid,path);
         //Astar.StartFindPath(startNode, goalNode);
         Astar.StartFindPath_Using_Vector(startPos, goalPos);
@@ -237,6 +275,11 @@ void SokobanLevel::ReadMapFile(const char* fileName)
             AddActor(new Ground(position));
             AddActor(new Target(position));
             break;
+
+        case'C':
+            AddActor(new Ground(position));
+            AddActor(new Creator(position));
+            break;
         }
         ++position.x;
 
@@ -259,6 +302,12 @@ void SokobanLevel::ReadMapFile(const char* fileName)
 }
 
 
+
+void SokobanLevel::UpdateMapGrid()
+{
+    //이거는 맵을 갱신하는 방식.
+    //for()
+}
 
 bool SokobanLevel::CheckGameClear()
 {
@@ -351,6 +400,7 @@ void SokobanLevel::FindStartAndGoal_Using_Vector(Vector2& outstartPos, Vector2& 
 
 void SokobanLevel::FindOriginalActor()
 {
+
     for (int i = 0; i < MapGrid.size(); i++)
     {
         for (Actor* gridActor : MapGrid[i])
@@ -377,10 +427,16 @@ void SokobanLevel::CreatePlayerAndTargetStatUI()
 void SokobanLevel::HowToMovementAndOtherManualUI()
 {
     //AddActor(new Custom_UI("ArrowKeys: Object Movement", Color::White, Vector2(0, 11)));
-    AddUI(new Custom_UI("ArrowKeys: Object Movement", Color::Green, Vector2(0, 11)));
-    AddUI(new Custom_UI("SpaceBar: FindTarget to using Astar", Color::Purple, Vector2(0, 12)));
-    AddUI(new Custom_UI("Clear: Clear Astar Route", Color::Yellow, Vector2(0, 13)));
-    AddUI(new Custom_UI("ESC: ShutDown This Simulation\n", Color::Gray, Vector2(0, 14)));
+    AddUI(new Custom_UI("ArrowKeys: Creator Movement", Color::Green, Vector2(0, 11)));
+
+    AddUI(new Custom_UI("W: Add Wall", Color::SkyBlue, Vector2(0, 12)));
+    AddUI(new Custom_UI("S: Add&ReCreate Start", Color::Red, Vector2(12, 12)));
+    AddUI(new Custom_UI("G: Add&ReCreate Target", Color::Blue, Vector2(34, 12)));
+
+
+    AddUI(new Custom_UI("SpaceBar: FindTarget to using Astar", Color::Purple, Vector2(0, 13)));
+    AddUI(new Custom_UI("TAB: Clear Astar Route", Color::Yellow, Vector2(0, 14)));
+    AddUI(new Custom_UI("ESC: ShutDown This Simulation\n", Color::Gray, Vector2(0, 15)));
 }
 
 bool SokobanLevel::CanPlayerMove(const Vector2& playerPosition, const Vector2& newPosition)
