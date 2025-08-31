@@ -286,8 +286,8 @@ void SokobanLevel::ReadMapFile(const char* fileName)
         if (mapCharcter == '\n')
         {
             MapGrid.emplace_back(GetActorBuffer());
-            //MapBuffer.clear();
             ClearActorBuffer();
+            // = tempActor.clear();
             ++position.y;
             position.x = 0;
 

@@ -34,12 +34,18 @@ public:
 	//	std::vector<std::vector<Actor*>>& grid
 	//);
 
+
 	void StartFindPath(Node* startNode, Node* goalNode);
+
+	//찾기 시작.
 	void StartFindPath_Using_Vector(Vector2& startPos, Vector2& goalPos);
 
+	//Render마다 실행.
 	std::vector<Node*> StepOfTheFindPath(std::vector<std::vector<Actor*>>& grid);
 
+	//찾기 완료.
 	bool CheckEndFindPath();
+	//후처리.
 	void ClearAstarSetting();
 
 	bool HasFindingPath();
@@ -49,6 +55,7 @@ public:
 	//그리드 출력 함수. 그리드를 액터로 출력해야하나..? 아니면..?
 	void DisplayGridWithPath(std::vector<std::vector<Actor*>>& grid,
 		const std::vector<Node*>& path);
+	//그리드 지우기.
 	void ClearGridAndPath(std::vector<std::vector<Actor*>>& grid,
 		std::vector<Node*>& path);
 
